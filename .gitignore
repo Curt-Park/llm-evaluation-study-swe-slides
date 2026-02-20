@@ -1,6 +1,9 @@
 .DS_Store
 node_modules/
+dist/
+.slidev/
 .idea/
 .vscode/
 *.swp
 *.swo
+*.log
