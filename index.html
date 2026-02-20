@@ -759,6 +759,10 @@
 
 <!-- Slide Preview Bar -->
 <div id="preview-bar">
+    <div id="preview-indicator">
+        <span id="preview-current">1</span> / <span id="preview-total">1</span>
+        <input type="number" id="preview-goto" min="1" placeholder="#" title="페이지 번호 입력 후 Enter">
+    </div>
     <div id="preview-track"></div>
 </div>
 
@@ -788,18 +792,27 @@
     function buildPreviewBar() {
         const track = document.getElementById('preview-track');
         const slides = document.querySelectorAll('.reveal .slides > section');
+        const total = slides.length;
         track.innerHTML = '';
+
+        document.getElementById('preview-total').textContent = total;
+        document.getElementById('preview-goto').max = total;
 
         slides.forEach((slide, i) => {
             const thumb = document.createElement('div');
             thumb.className = 'preview-thumb';
             if (i === 0) thumb.classList.add('active');
 
+            // Page number badge
+            const badge = document.createElement('span');
+            badge.className = 'preview-badge';
+            badge.textContent = i + 1;
+            thumb.appendChild(badge);
+
             // Clone slide content into a scaled-down preview
             const inner = document.createElement('div');
             inner.className = 'preview-inner';
             inner.innerHTML = slide.innerHTML;
-            // Remove notes from preview
             inner.querySelectorAll('.notes, aside').forEach(el => el.remove());
             thumb.appendChild(inner);
 
@@ -809,20 +822,76 @@
 
             track.appendChild(thumb);
         });
+
+        // Drag-to-scroll on preview track
+        let isDragging = false;
+        let startX, scrollLeft;
+
+        track.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.preview-thumb')) {
+                // Allow click, start drag tracking
+            }
+            isDragging = true;
+            track.classList.add('dragging');
+            startX = e.pageX - track.offsetLeft;
+            scrollLeft = track.scrollLeft;
+            e.preventDefault();
+        });
+
+        track.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const x = e.pageX - track.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            track.scrollLeft = scrollLeft - walk;
+        });
+
+        const stopDrag = () => {
+            isDragging = false;
+            track.classList.remove('dragging');
+        };
+        track.addEventListener('mouseup', stopDrag);
+        track.addEventListener('mouseleave', stopDrag);
+
+        // Click after drag prevention
+        let dragDistance = 0;
+        track.addEventListener('mousedown', (e) => { dragDistance = 0; });
+        track.addEventListener('mousemove', () => { if (isDragging) dragDistance++; });
+        track.querySelectorAll('.preview-thumb').forEach((thumb, i) => {
+            thumb.addEventListener('click', (e) => {
+                if (dragDistance > 5) {
+                    e.stopImmediatePropagation();
+                }
+            }, true);
+        });
     }
 
     function updatePreviewBar() {
         const current = Reveal.getIndices().h;
+        document.getElementById('preview-current').textContent = current + 1;
         const thumbs = document.querySelectorAll('.preview-thumb');
         thumbs.forEach((t, i) => {
             t.classList.toggle('active', i === current);
         });
-        // Scroll active thumb into view
         const active = document.querySelector('.preview-thumb.active');
         if (active) {
             active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }
     }
+
+    // Go-to page input
+    document.getElementById('preview-goto').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const page = parseInt(e.target.value);
+            const total = document.querySelectorAll('.reveal .slides > section').length;
+            if (page >= 1 && page <= total) {
+                Reveal.slide(page - 1);
+            }
+            e.target.value = '';
+            e.target.blur();
+        }
+        e.stopPropagation(); // prevent Reveal.js key handling
+    });
+    document.getElementById('preview-goto').addEventListener('keyup', (e) => e.stopPropagation());
 </script>
 </body>
 </html>

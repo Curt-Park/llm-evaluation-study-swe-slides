@@ -450,28 +450,79 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px;
+    height: 130px;
     background: rgba(10, 10, 20, 0.92);
     border-top: 1px solid rgba(255,255,255,0.1);
     z-index: 100;
-    padding: 10px 16px;
+    padding: 6px 16px 8px;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+}
+
+#preview-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 0 4px 4px;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+#preview-current {
+    color: var(--accent-blue);
+    font-weight: 700;
+}
+
+#preview-goto {
+    width: 42px;
+    height: 20px;
+    margin-left: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 11px;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+}
+
+#preview-goto::-webkit-inner-spin-button,
+#preview-goto::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#preview-goto:focus {
+    border-color: var(--accent-blue);
 }
 
 #preview-track {
     display: flex;
     gap: 8px;
-    height: 100%;
+    flex: 1;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-behavior: smooth;
     align-items: center;
     scrollbar-width: none;
+    cursor: grab;
 }
 
 #preview-track::-webkit-scrollbar {
     display: none;
+}
+
+#preview-track.dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
+}
+
+#preview-track.dragging .preview-thumb {
+    pointer-events: none;
 }
 
 .preview-thumb {
@@ -496,6 +547,25 @@
 .preview-thumb.active {
     border-color: var(--accent-blue);
     box-shadow: 0 0 12px rgba(79, 195, 247, 0.3);
+}
+
+.preview-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.7);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    z-index: 2;
+    line-height: 1.4;
+}
+
+.preview-thumb.active .preview-badge {
+    background: var(--accent-blue);
+    color: #fff;
 }
 
 .preview-inner {
