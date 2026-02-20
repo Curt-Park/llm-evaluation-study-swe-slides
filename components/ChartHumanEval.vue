@@ -19,7 +19,7 @@ onMounted(() => {
   new Chart(canvas.value, {
     type: 'line',
     data: {
-      labels: ['2021\nCodex', '2022\ncode-davinci', '2023\nGPT-4', '2024\nGPT-4o', '2024\nClaude 3 Opus', '2024\nLlama 3.1 405B', '2025\no1'],
+      labels: ['2021\nCodex', '2022\ncode-davinci', '2023\nGPT-4', '2024\nGPT-4o', '2024\nClaude 3 Opus', '2024\nLlama 3.1 405B', '2024\no1'],
       datasets: [{
         label: 'pass@1 (%)',
         data: [28.8, 47.0, 67.0, 90.2, 84.9, 89.0, 96.3],

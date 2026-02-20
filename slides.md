@@ -1,7 +1,7 @@
 ---
 theme: default
 colorSchema: dark
-title: 'LLM 코딩 벤치마크: 진화의 궤적과 남은 과제'
+title: '소프트웨어 엔지니어링과 LLM 평가'
 info: Curt Park
 transition: slide-left
 fonts:
@@ -13,13 +13,13 @@ drawings:
   persist: false
 ---
 
-# LLM 코딩 벤치마크
-## 진화의 궤적과 남은 과제
+# 소프트웨어 엔지니어링과 LLM 평가
+## 코딩 벤치마크의 진화, 남은 과제
 
 <p class="title-meta">Curt Park</p>
 
 <!--
-1시간 발표. LLM 코딩 벤치마크가 어떻게 진화해왔고, 어떤 한계가 남아있는지 논문 데이터를 기반으로 살펴봅니다.
+1시간 발표. SE 분야에서 LLM을 어떻게 평가하는지, 코딩 벤치마크가 어떻게 진화해왔고 어떤 한계가 남아있는지 논문 데이터를 기반으로 살펴봅니다.
 -->
 
 ---
@@ -27,44 +27,212 @@ drawings:
 # Agenda
 
 <ol class="agenda-list">
-  <li>SE 벤치마크 조감도</li>
-  <li>출발점: HumanEval</li>
-  <li>현실 세계로: SWE-bench</li>
-  <li>Python을 넘어서: 다국어 확장</li>
-  <li>불편한 진실: 오염 문제</li>
-  <li>오염 대응 전략</li>
-  <li>남은 과제와 전망</li>
+  <li>소프트웨어 엔지니어링과 코딩 벤치마크</li>
+  <li>HumanEval: LLM 코딩 벤치마크의 조상님</li>
+  <li>SWE-bench: 실전 난이도의 문제</li>
+  <li>SWE-bench-Verified: 더 나은 품질</li>
+  <li>Multi-SWE-bench: 다언어 확장</li>
+  <li>The SWE-Bench illusion: 오염 문제</li>
+  <li>SWE-rebench: 오염 문제 대응 전략1 - 지속적 갱신</li>
+  <li>SWE-bench Pro: 오염 문제 대응 전략2 - 접근 제한</li>
+  <li>남은 과제</li>
+  <li>의견 나누기</li>
 </ol>
 
 <!--
-총 7개 섹션으로 구성. 벤치마크의 계보를 시간순으로 따라가며 각 단계의 동기와 한계를 분석합니다.
+총 7개 섹션으로 구성. SE 분야에서 LLM 평가의 큰 그림을 먼저 잡고, 코딩 벤치마크의 계보를 시간순으로 따라가며 각 단계의 동기와 한계를 분석합니다.
 -->
 
 ---
 
-# 왜 코딩 벤치마크인가?
+# 오늘 발표에서
 
-- LLM의 가장 활발한 응용 분야 = **코딩**
-- "측정할 수 없으면 개선할 수 없다"
-- 벤치마크 점수가 모델 선택과 투자를 결정
-- 그러나... 벤치마크 점수 = 실제 능력?
+<br>
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 다루는 것
+- SWE 분야에서의 LLM 활용
+- SWE 벤치마크의 계보
+- SWE 벤치마크의 한계
+
+</div>
+<div>
+
+### 다루지 않는 것
+- 모델 성능 개선
+- 에이전트 하네스 (스캐폴딩)
+
+</div>
+</div>
 
 <!--
-벤치마크가 단순한 학술 도구를 넘어 산업에 미치는 영향이 큽니다. 하지만 점수의 의미를 정확히 이해하려면 벤치마크의 설계와 한계를 알아야 합니다.
+발표의 목적을 명확히 합니다. 우리는 개별 모델이 얼마나 뛰어난지를 보는 게 아니라, "평가 방법" 자체를 분석합니다.
 -->
 
 ---
 
-# SE 벤치마크 전체 조감도
+# 최신 모델 발표와 벤치마크
 
-<p class="chart-note">소프트웨어 엔지니어링 벤치마크 291개 분석 (2025)</p>
+<p class="chart-note">최신 모델의 성능비교에 반드시 등장하는 벤치마크</p>
 
-<ChartSEDistribution />
+<div class="grid grid-cols-2 gap-6">
+<div>
 
-<p class="source">Source: Hou et al., 2025</p>
+<img src="./images/anthropic2025-claude-opus-4-6/evaluating_claude_opus_4_6.jpg" style="width: 80%; border-radius: 8px" />
+<p class="source" style="text-align: center">Anthropic — Claude Opus 4.6 발표 (2025)</p>
+
+</div>
+<div>
+
+<img src="./images/openai2025-gpt-5-3-codex/swe-bench-pro.jpg" style="width: 100%; border-radius: 8px" />
+<p class="source" style="text-align: center">OpenAI — GPT-5.3-Codex 발표 (2025)</p>
+
+</div>
+</div>
+
+<p class="emphasis">SWE-bench Verified, SWE-bench Pro… "SWE"가 눈에 띈다</p>
+
+<!--
+최신 모델 발표를 보면 반드시 코딩 벤치마크 점수가 있습니다. 특히 "SWE" prefix가 붙은 벤치마크들이 두드러집니다. 이 벤치마크들은 무엇이고, 왜 이렇게 중요하게 다루어지는 걸까요?
+-->
+
+---
+
+# "Coding = Software Engineering?"
+
+<br>
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 대표적인 Agentic Coding 벤치마크들...
+- **SWE**-bench
+- **SWE**-bench Verified
+- **SWE**-bench Pro
+- **SWE**-bench Live
+- **SWE**-rebench
+- Multi-**SWE**-bench
+
+</div>
+<div>
+
+### 그렇다면...
+
+<div class="highlight-box warning" style="margin-top: 1em">
+
+코딩(Coding)이 곧<br>
+소프트웨어 엔지니어링(SWE)일까?
+
+</div>
+
+</div>
+</div>
+
+<p class="emphasis">→ 소프트웨어 엔지니어링이 무엇인지 먼저 짚고 넘어가보자</p>
+
+<!--
+"SWE" prefix가 넘쳐나는 상황. 코딩 능력이 곧 소프트웨어 엔지니어링 능력인가? 이 질문에 답하기 위해 SE의 정의부터 살펴봅니다.
+-->
+
+---
+
+# 소프트웨어 엔지니어링이란?
+
+<br>
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+<img src="./images/11-bourque2024-swebok-v4/SWEBOK-v4-Fig1.jpg" style="width: 100%; border-radius: 8px" />
+<p class="source" style="text-align: center">Bourque & Fairley (eds.), SWEBOK V4, IEEE, 2024</p>
+
+</div>
+
+<div class="swebok-grid" style="font-size: 0.7em">
+  <div class="swebok-item covered">소프트웨어 구현</div>
+  <div class="swebok-item covered">소프트웨어 테스팅</div>
+  <div class="swebok-item covered">소프트웨어 유지보수</div>
+  <div class="swebok-item covered">소프트웨어 보안</div>
+  <div class="swebok-item covered">요구사항 공학</div>
+  <div class="swebok-item covered">소프트웨어 설계</div>
+  <div class="swebok-item covered">소프트웨어 아키텍처</div>
+  <div class="swebok-item covered">형상 관리</div>
+  <div class="swebok-item covered">소프트웨어 품질</div>
+  <div class="swebok-item covered">SE 운영</div>
+  <div class="swebok-item covered">SE 관리</div>
+  <div class="swebok-item covered">SE 프로세스</div>
+  <div class="swebok-item covered">SE 모델/방법론</div>
+  <div class="swebok-item covered">SE 전문실무</div>
+  <div class="swebok-item covered">SE 경제학</div>
+  <div class="swebok-item covered">컴퓨팅 기초</div>
+  <div class="swebok-item covered">수학 기초</div>
+  <div class="swebok-item covered">공학 기초</div>
+</div>
+
+</div>
+
+<!--
+SWEBOK V4 기준 18개 지식 영역. 현재 벤치마크가 커버하는 것은 구현과 테스팅, 그리고 유지보수와 보안의 일부뿐입니다.
+-->
+
+---
+
+# SE 벤치마크 분포
+
+<p class="chart-note">소프트웨어 엔지니어링 벤치마크 291개 분석: 무려 43%가 코딩</p>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em">
+<img src="./images/12-hu2025-se-benchmark-survey/fig3-benchmark-distribution-by-task.jpg" style="width: 55%; border-radius: 8px;" />
+<p class="source">Source: Hu et al., "Assessing and Advancing Benchmarks for Evaluating LLMs in SE Tasks," arXiv:2505.08903, 2025</p>
+</div>
 
 <!--
 SE 전체 291개 벤치마크 중 코딩이 43%로 가장 많습니다. 요구사항 공학, 설계, 프로젝트 관리 등은 10% 미만으로, 정량적 자동 평가가 어려운 영역입니다.
+-->
+
+---
+
+# 왜 이렇게 치우쳐 있을까?
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+<br>
+
+### 정량 평가 & 자동화의 난이도
+
+<br>
+
+| SE 영역 | 정답 판별 방법 | 자동화 |
+|---------|-------------|--------|
+| 코딩 | 테스트 실행 | ✅ 쉬움 |
+| 테스팅 | 커버리지/버그 탐지 | ⚠️ 부분 |
+| 요구사항 | 전문가 판단 필요 | ❌ 어려움 |
+| 설계/아키텍처 | 주관적 기준 | ❌ 어려움 |
+| 프로젝트 관리 | 성과 지표 다양 | ❌ 어려움 |
+
+</div>
+<div>
+
+<img src="./images/14-wang2025-sdlc-survey/fig1-taxonomy-of-codellm-benchmarks.jpg" style="width: 100%; border-radius: 8px" />
+<p class="source" style="text-align: center">Wang et al., SDLC Taxonomy, arXiv:2505.05283, 2025</p>
+
+</div>
+</div>
+
+<!--
+코딩 벤치마크가 압도적으로 많은 이유는 단순합니다. 코드는 실행해서 테스트를 통과하면 정답이라는 명확한 기준이 있습니다. 요구사항이나 설계 품질을 자동으로 평가하는 것은 훨씬 어렵습니다.
+-->
+
+---
+layout: center
+---
+
+# 오늘은 코딩 벤치마크에 집중합니다
+
+<!--
+오늘은 코딩 벤치마크로 범위를 제한합니다. 하지만 이 한계를 인지한 채로 발표를 진행합니다. 발표 내내 "이 점수가 실제로 무엇을 측정하는가"라는 질문을 유지해주세요.
 -->
 
 ---
@@ -84,7 +252,7 @@ layout: section
 
 ### 기존 평가의 문제
 - 코드 평가에 **BLEU 점수** 사용
-- 텍스트 유사도로 코드 정확도 측정
+- **BLEU** (Bilingual Evaluation Understudy):<br>n-gram 중복 기반 텍스트 유사도 메트릭.<br>기계번역 평가용으로 설계됨.
 - 실제로 실행되는지는 무관
 
 </div>
@@ -109,7 +277,7 @@ def sum_two(x, y): return x + y
 <p class="emphasis">→ 기능적 정확성(functional correctness)을 직접 측정해야 한다</p>
 
 <!--
-HumanEval 이전에는 BLEU 점수로 코드 생성 모델을 평가했습니다. BLEU는 생성된 텍스트가 참조 텍스트와 얼마나 비슷한지를 측정하는데, 코드에서는 의미적으로 동일한 코드가 텍스트적으로 완전히 달리 쓰일 수 있습니다. 반대로 텍스트는 비슷하지만 버그가 있는 코드도 높은 점수를 받을 수 있습니다. OpenAI Codex 팀이 이 문제를 해결하려고 HumanEval을 만들었습니다.
+HumanEval 이전에는 BLEU 점수로 코드 생성 모델을 평가했습니다. BLEU는 기계번역을 위해 설계된 지표로, 코드에서는 의미적으로 동일한 코드가 텍스트적으로 완전히 달리 쓰일 수 있습니다. 반대로 텍스트는 비슷하지만 버그가 있는 코드도 높은 점수를 받을 수 있습니다. OpenAI Codex 팀이 이 문제를 해결하려고 HumanEval을 만들었습니다.
 -->
 
 ---
@@ -119,23 +287,38 @@ HumanEval 이전에는 BLEU 점수로 코드 생성 모델을 평가했습니다
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 구조
-- **164**개 Python 문제 (수작업 제작)
-- 함수 시그니처 + 독스트링
-- 문제당 평균 **7.7**개 유닛 테스트
-- GitHub 코드 **제외** — 오염 방지
+### 문제 예시
+
+```python
+def has_close_elements(
+    numbers: List[float],
+    threshold: float
+) -> bool:
+    """ Check if in given list of numbers,
+    are any two numbers closer to each other
+    than given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0], 0.3)
+    True
+    """
+```
+
+164개 Python 문제 · GitHub 코드 **제외** · 평균 **7.7**개 유닛 테스트
 
 </div>
 <div>
 
 ### 평가 메트릭: pass@k
-- n개 샘플 생성 → c개 정답
-- 불편 추정량 공식 사용:
 
 $$\text{pass@k} = 1 - \frac{\binom{n-c}{k}}{\binom{n}{k}}$$
 
-- pass@1: 실용적 지표
-- pass@100: 잠재력 지표
+n개 샘플 중 c개가 정답일 때,<br>k개를 무작위로 뽑았을 때<br>**전부 오답일 확률을 1에서 뺀 것**
+
+<hr>
+
+- **pass@1**: 1개 생성해서 맞출 확률<br><span class="small">→ 실용적 지표 (사용자는 보통 첫 응답을 씀)</span>
+- **pass@100**: 100개 중 하나라도 맞을 확률<br><span class="small">→ 모델의 잠재력 상한선</span>
 
 </div>
 </div>
@@ -143,8 +326,10 @@ $$\text{pass@k} = 1 - \frac{\binom{n-c}{k}}{\binom{n}{k}}$$
 <!--
 HumanEval의 핵심 설계 원칙:
 1. 수작업 제작: GitHub 코드를 그대로 가져온 게 아니라 직접 작성. 훈련 데이터 오염을 방지하기 위함입니다.
-2. pass@k 메트릭: 단순히 k개 중 하나라도 맞으면 성공이라는 naive한 방식은 분산이 크기 때문에, 편향되지 않은 추정량 공식을 사용합니다. n개 샘플을 생성해서 c개가 맞았을 때, k개 선택했을 때 최소 1개가 맞을 확률을 정확하게 계산합니다.
+2. pass@k 메트릭: 단순히 k개 중 하나라도 맞으면 성공이라는 naive한 방식은 분산이 크기 때문에, 편향되지 않은 추정량 공식을 사용합니다.
 3. 평균 7.7개 테스트: 하나의 문제당 다양한 엣지 케이스를 커버해서 우연한 통과를 방지합니다.
+
+Codex 초기 결과: pass@1 28.8%, pass@100 72.3% → 반복 샘플링 전략의 유효성을 보여줍니다.
 -->
 
 ---
@@ -155,13 +340,14 @@ HumanEval의 핵심 설계 원칙:
 
 <ChartHumanEval />
 
-<!--
-초기 결과 비교:
-- GPT-3: 0% (pass@1) — 일반 언어모델은 코드 생성 불가
-- Codex (12B): 28.8% (pass@1), 72.3% (pass@100)
-- 100개 샘플링 시 72%까지 올라감 → 반복 샘플링 전략의 유효성
+<p class="source">
+Codex 28.8%: Chen et al. 2021 · code-davinci 47.0%: CodeT (Chen et al. 2022) · GPT-4 67.0%: OpenAI Technical Report 2023 · GPT-4o 90.2%: OpenAI simple-evals · Claude 3 Opus 84.9%: Anthropic Model Card 2024 · Llama 3.1 89.0%: Meta AI Blog 2024 · o1 96.3%: EvalPlus Leaderboard / o1 System Card 2024
+</p>
 
+<!--
 2021년 Codex 28.8%에서 시작해 불과 4년 만에 96.3%까지 도달. 이 속도는 놀랍지만, 동시에 벤치마크가 사실상 포화 상태에 이르렀음을 의미합니다.
+
+o1은 2024년 9월 출시되었습니다.
 -->
 
 ---
@@ -176,127 +362,150 @@ Top 모델들이 HumanEval 원본에서는 90%+ 달성하지만,
 
 </div>
 
-- 구성적 일반화(compositional generalization) 부족
-- 문제를 "풀었다" vs 문제를 "외웠다"의 차이
-- 추정 오염률 **8~18%** — 훈련 데이터와 근접 중복 존재
+EvoEval의 **7가지 변형** 예시:
+- 함수 이름 변경 (e.g., `has_close_elements` → `check_proximity`)
+- 입출력 형식 뒤집기 (반환 타입 변경)
+- 함수 합성 (두 함수를 하나로 합침)
+- 맥락·도메인 교체 (숫자 → 문자열 문제로)
+
+→ 문제의 본질은 같지만 **표현만 바뀌었을 때 풀지 못한다**<br>
+→ 진짜 이해가 아니라 **패턴 암기**에 의존한다는 증거
+
+<p class="source">
+Xia, Deng, Zhang, "EvoEval: Evolving Coding Benchmarks via LLM," COLM 2024, arXiv:2403.19114 — HumanEval 164문제를 7가지 방식으로 변형
+</p>
 
 <!--
-포화의 두 가지 원인:
-1. 진짜 능력 향상: 모델이 실제로 더 잘하게 됨
-2. 암기/오염: HumanEval 문제들이 인터넷에 공개되어 훈련 데이터에 포함됨
+포화의 원인: 진짜 능력 향상도 있지만, HumanEval 문제들이 인터넷에 공개되어 훈련 데이터에 포함된 암기/오염도 존재합니다.
 
-변형 태스크(함수 이름 변경, 입출력 형식 변경 등)에서 성능이 급락한다는 것은 모델이 유사한 패턴을 기억하는 경향이 있다는 증거입니다. 추정 오염률은 8~18%로, HumanEval 문제의 상당수가 훈련 데이터에 포함되어 있을 가능성이 있습니다.
+EvoEval: HumanEval 원본 문제를 7가지 방식으로 LLM이 변형 → 표현만 달라졌는데 성능이 급락 → 모델이 문제의 의미를 이해하는 게 아니라 형태를 암기하는 경향.
 -->
 
 ---
 
-# HumanEval의 한계
+# HumanEval의 핵심 한계
 
-| 한계 | 설명 |
-|------|------|
-| 범위 | 자기완결적 함수 단위만 평가 |
-| 언어 | Python 단일 언어 |
-| 복잡도 | 코드베이스 전체 이해 불필요 |
-| 현실성 | 알고리즘 퍼즐 수준 — 실제 개발과 괴리 |
-| 오염 | 학습 데이터 오염 가능성 8~18% 추정 |
-| 포화 | 현대 모델 85~90%+ → 차별화 불가 |
+<div class="highlight-box danger">
 
-<p class="emphasis">→ 더 현실적인 벤치마크가 필요하다</p>
+### 실제 소프트웨어 엔지니어링 문제는 훨씬 더 복잡하다
+
+</div>
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### HumanEval이 가정하는 세계
+- 독립적인 함수 한 개
+- 명확한 입출력 명세
+- 빈 컨텍스트에서 시작
+
+</div>
+<div>
+
+### 현실 세계의 소프트웨어 개발
+- **여러 파일, 모듈, 클래스**가 얽힌 대규모 코드베이스
+- 기존 구현·테스트·문서 등 **프로젝트 전체 맥락** 이해 필요
+- GitHub 이슈를 읽고 버그를 **재현**하고, 기존 **테스트 스위트**를 통과시켜야
+
+</div>
+</div>
+
+<p class="emphasis">→ 단일 함수 작성 능력 ≠ 소프트웨어 엔지니어링 능력</p>
 
 <!--
-HumanEval의 가장 큰 한계는 "실제 소프트웨어 개발"을 반영하지 않는다는 점입니다. 실제 개발자는:
-- 수백만 줄의 기존 코드를 이해하고 수정합니다
-- GitHub 이슈 설명을 읽고 버그를 재현합니다
-- 여러 파일에 걸쳐 변경 사항을 만들어야 합니다
-- 기존 테스트를 통과시켜야 합니다
+HumanEval의 가장 큰 한계는 "실제 소프트웨어 개발"을 반영하지 않는다는 점입니다.
 
-164개 문제라는 작은 크기도 문제입니다. 통계적 유의성이 낮고, 다양한 능력을 측정하기에 부족합니다.
+부수적 한계:
+- Python 단일 언어만 지원 (164개 문제)
+- 현대 모델 90%+ 도달 → 차별화 불가
+- 진짜 이해보다 패턴 암기에 의존 가능
+
+이 한계들이 SWE-bench 등장의 동기가 됩니다.
 -->
-
----
-
-# HumanEval → SWE-bench
-
-<p class="emphasis">패러다임 전환의 필요성</p>
-
-| | HumanEval | SWE-bench |
-|--|-----------|-----------|
-| 단위 | 함수 | 코드베이스 전체 |
-| 맥락 | 독스트링 | 실제 GitHub 이슈 |
-| 규모 | 164 문제 | 2,294 이슈 |
-| 현실성 | 알고리즘 퍼즐 | 실제 버그/기능 |
-| 난이도 | Top 모델 96%+ | Top 모델 ~20% |
 
 ---
 layout: section
 ---
 
-# 현실 세계로: SWE-bench
+# SWE-bench: 실전 난이도의 문제
 
 <p class="section-subtitle">실제 GitHub 이슈 기반 평가 (2023)</p>
 
 ---
 
-# SWE-bench 탄생 배경
+# SWE-bench란?
+
+<p class="source">Jimenez et al., Princeton NLP — ICLR 2024 Oral, arXiv:2310.06770</p>
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 기존 벤치마크의 공통 한계
-- 고립된 함수 작성만 평가
-- 멀티파일 의존성 없음
-- 코드베이스 관습 이해 불필요
-- 자동화된 테스트 없거나 부족
+### 핵심 아이디어
+유명 GitHub 레포에 제출된<br>**이슈(버그 리포트 / 기능 요청) 해결**이 목표
+
+<div class="highlight-box info" style="margin-top: 1em">
+
+**GitHub PR = 자연발생적 벤치마크**<br>
+이슈 → 코드 수정 → 테스트 통과의<br>흐름이 이미 존재한다
+
+</div>
 
 </div>
 <div>
 
-### 핵심 인사이트
-실제 소프트웨어 엔지니어링은:
-- 대규모 코드베이스 **이해**
-- 암묵적 관습 **추론**
-- 컴포넌트 간 의존성 **파악**
-- 기존 테스트 **통과**
+### 규모와 초기 성능
+
+<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em; margin-top: 0.5em">
+  <div class="stat-card">
+    <div class="stat-number" style="font-size: 1.5em">12</div>
+    <div class="stat-label">인기 Python<br>오픈소스 레포</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="font-size: 1.5em">2,294</div>
+    <div class="stat-label">이슈–PR 쌍</div>
+  </div>
+</div>
+
+<div class="highlight-box danger" style="margin-top: 0.5em; font-size: 0.85em">
+
+BM25 retriever + Claude 2로<br>단 **1.96%**만 해결
 
 </div>
+
 </div>
-
-<div class="highlight-box info">
-
-**GitHub PR = 자연발생적 벤치마크**: 이슈 → 코드 수정 → 테스트 통과의 흐름이 이미 존재한다
-
 </div>
 
 <!--
-SWE-bench의 핵심 아이디어는 "이미 존재하는 데이터를 활용하자"는 것입니다. GitHub의 실제 PR들은 (1) 문제 설명(이슈), (2) 해결책(코드 수정), (3) 검증(테스트)이 자연스럽게 붙어있습니다. 이것을 벤치마크로 변환하면 됩니다.
+SWE-bench의 핵심 아이디어는 "이미 존재하는 데이터를 활용하자"는 것입니다. GitHub의 실제 PR들은 (1) 문제 설명(이슈), (2) 해결책(코드 수정), (3) 검증(테스트)이 자연스럽게 붙어있습니다.
 
 Princeton NLP 그룹이 2023년에 발표했으며 ICLR 2024 Oral 채택됩니다.
 -->
 
 ---
 
-# SWE-bench 구축 파이프라인
+# SWE-bench 구축: 3단계 파이프라인
 
-<div class="grid grid-cols-2 gap-8">
+<div class="grid grid-cols-2 gap-6">
 <div>
 
-### 데이터 수집
-1. GitHub에서 PR ~90,000개 수집
-2. **3가지 필터링 조건:**
-   - Merged PR
-   - GitHub 이슈와 연결
-   - 테스트 파일 수정 포함
-3. 최종 **2,294**개 인스턴스
+### ~90,000 → 2,294 생존
+
+**Stage 1: PR 수집**
+- 12개 인기 레포에서 ~90,000 PR 수집
+
+**Stage 2: Attribute-based filtering**
+- GitHub 이슈와 연결된 PR
+- 테스트 파일 수정 포함
+
+**Stage 3: Execution-based filtering**
+- 패치 적용 전 테스트 **실패**
+- 패치 적용 후 테스트 **통과**
+- 환경 오류 없음
 
 </div>
 <div>
 
-### 실행 환경
-- PR 병합 직전 커밋 기준으로<br>**Docker 환경** 구성
-- 패치 적용 전: 테스트 **실패**
-- 패치 적용 후: 테스트 **통과**
-- 이슈 설명 평균 **195단어**
-- 참조 패치: 중앙값 1~2개 파일, 4~10줄
+<img src="./images/03-jimenez2024-swe-bench/fig2-swe-bench-task-instances.jpg" style="width: 100%; border-radius: 8px" />
 
 </div>
 </div>
@@ -306,41 +515,119 @@ Princeton NLP 그룹이 2023년에 발표했으며 ICLR 2024 Oral 채택됩니�
 <!--
 구축 파이프라인의 핵심:
 1. 필터링: 90,000개 PR 중 2,294개만 통과. 가장 중요한 조건은 "테스트 파일 수정 포함"입니다. 이 조건이 있어야 실행 기반 평가가 가능합니다.
-2. Docker 환경: 재현 가능한 평가를 위해 각 인스턴스마다 독립적인 실행 환경을 구성합니다.
-3. Fail-to-Pass 검증: 패치 전에는 실패하고, 패치 후에는 통과하는 테스트를 기준으로 합니다. 이것이 "실제로 해결했다"는 증거입니다.
+2. Execution-based filtering: 실제로 실행해서 fail→pass 전환을 확인합니다.
+3. 결과: ~90,000 PR에서 2,294개(약 2.5%)만 최종 생존.
+-->
 
-12개 레포 중 Django가 850개로 가장 많고, Flask가 11개로 가장 적습니다. 불균형이 있지만 모두 실제 프로덕션 코드라는 점이 중요합니다.
+---
+
+# SWE-bench 태스크와 평가 방법
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### 태스크 구성
+- **Input**: 이슈 텍스트 + 코드베이스<br><span class="small">(BM25로 관련 파일 선별하여 컨텍스트 구성)</span>
+- **Output**: 패치 파일 (diff 형식)
+
+### 평가 기준
+1. 패치 적용
+2. **fail-to-pass** 테스트 통과 (새로 추가된 테스트)
+3. **pass-to-pass** 테스트 유지 (기존 테스트 회귀 없음)
+4. 둘 다 통과 → "resolved"
+
+$$\text{resolve rate} = \frac{\text{해결된 인스턴스}}{\text{전체 인스턴스}}$$
+
+</div>
+<div>
+
+<img src="./images/03-jimenez2024-swe-bench/fig8-visualization-of-the-eval-pipeline.jpg" style="width: 100%; border-radius: 8px" />
+
+</div>
+</div>
+
+<!--
+평가의 핵심: 단순히 코드가 실행되는지가 아니라, 이슈가 제기한 버그/기능을 정확히 해결했는지를 테스트로 확인합니다. pass-to-pass 조건이 중요한 이유는 기존 기능을 깨지 않아야 하기 때문입니다.
+-->
+
+---
+
+# SWE-bench 데이터 특성
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### 패치 통계
+- 평균 **1.7개** 파일 수정
+- 평균 **3.0개** 함수 수정
+- 평균 **32.8줄** 변경
+- 이슈 설명 평균 **195단어**
+- pass-to-pass 테스트 중간값 **51개**
+
+### 레포별 분포
+Django 850 · sympy 386<br>scikit-learn 229 · sphinx 187<br>matplotlib 184 · …
+
+</div>
+<div>
+
+<img src="./images/03-jimenez2024-swe-bench/fig3-distribution-of-swe-bench-tasks.jpg" style="width: 100%; border-radius: 8px" />
+
+<p class="source" style="text-align:center">레포별 인스턴스 분포</p>
+
+</div>
+</div>
+
+<div class="highlight-box warning" style="font-size: 0.85em">
+
+matplotlib 이슈의 32%, seaborn 이슈의 10%에 **이미지 포함** → 멀티모달 이해 필요
+
+</div>
+
+<!--
+데이터 특성이 중요한 이유: 평균 32.8줄 수정은 HumanEval의 짧은 함수와 완전히 다른 차원입니다. 멀티모달 이슈의 존재도 흥미롭습니다 - 텍스트만으로는 이슈를 완전히 이해할 수 없는 경우가 있습니다.
 -->
 
 ---
 
 # SWE-bench 초기 결과
 
-<div class="stat-grid">
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 논문 발표 당시 성능
+
+<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em">
   <div class="stat-card red">
-    <div class="stat-number">1.96%</div>
-    <div class="stat-label">Claude 2<br>(최초 최고 성능)</div>
+    <div class="stat-number" style="font-size: 1.4em">1.96%</div>
+    <div class="stat-label">Claude 2<br>BM25 13k</div>
   </div>
   <div class="stat-card yellow">
-    <div class="stat-number">12.47%</div>
-    <div class="stat-label">SWE-agent + GPT-4<br>(에이전트 접근법)</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number">2,294</div>
-    <div class="stat-label">전체 태스크 수</div>
+    <div class="stat-number" style="font-size: 1.4em">~5%</div>
+    <div class="stat-label">Oracle retrieval<br>(정답 파일 제공 시)</div>
   </div>
 </div>
 
-<p class="emphasis">HumanEval 96% 달성 모델이 SWE-bench에서는 2% 미만</p>
+<p class="emphasis" style="margin-top: 0.5em">HumanEval 84% 달성 모델이<br>SWE-bench에서는 2% 미만</p>
+
+</div>
+<div>
+
+### 컨텍스트 길이와 성능
+- BM25 컨텍스트가 길어질수록 성능 **하락**
+- Oracle-collapsed<br><span class="small">(수정 라인 ±15줄만 제공):</span><br>
+  Claude 2: 4.8% → 5.9%<br>
+  GPT-4: 1.3% → 3.4%
+- → 긴 컨텍스트 처리 능력이 핵심 병목
+
+</div>
+</div>
 
 <!--
-초기 결과가 충격적이었던 이유:
-- HumanEval에서 84% 이상을 달성하는 Claude 2가 SWE-bench에서는 1.96%
-- 이는 두 벤치마크가 측정하는 것이 근본적으로 다르다는 증거입니다
+초기 결과가 충격적이었던 이유: HumanEval 84% Claude 2가 SWE-bench에서 1.96%는 두 벤치마크가 근본적으로 다른 능력을 측정한다는 증거입니다.
 
-SWE-agent는 단순 LM API 호출이 아니라 "에이전트"로서 코드베이스를 탐색하고 파일을 수정하는 도구를 사용합니다. 이 방식으로 12.47%까지 올렸지만, 여전히 인간 개발자 수준과는 거리가 멉니다.
+Oracle-collapsed 실험: 정답 파일의 수정된 줄 ±15줄만 컨텍스트로 줬을 때 성능이 올라갑니다 → 문제는 "코드 수정 능력"이 아니라 "어디를 수정해야 하는지 찾는 능력"임을 시사합니다.
 
-기여: 1) 최초의 실제 GitHub 이슈 기반 벤치마크, 2) 2,294개 태스크 + Docker 환경, 3) SWE-Llama 파인튜닝 베이스라인, 4) 훈련 데이터/모델 가중치 오픈소스 공개
+기여: 1) 최초의 실제 GitHub 이슈 기반 벤치마크, 2) 2,294개 태스크 + Docker 환경, 3) SWE-Llama 파인튜닝 베이스라인
 -->
 
 ---
@@ -364,17 +651,90 @@ SWE-agent는 단순 LM API 호출이 아니라 "에이전트"로서 코드베이
 <p class="emphasis">→ 품질 검증된 부분집합이 필요하다</p>
 
 ---
+layout: section
+---
 
-# SWE-bench Verified
+# SWE-bench Verified: 더 나은 품질
+
+<p class="section-subtitle">전문가 검증 부분집합 (2024)</p>
+
+---
+
+# 왜 Verified가 필요했나
+
+<p class="source">OpenAI Preparedness Team, 2024</p>
+
+<div class="grid grid-cols-3 gap-4" style="font-size: 0.85em">
+<div>
+
+<div class="highlight-box danger">
+
+### Overly Specific Tests
+테스트가 너무 구체적이거나<br>이슈와 무관한 내용을 검사
+
+<hr>
+
+<p class="small">예: 특정 에러 메시지 문자열 일치 검사 → 논리는 맞지만 메시지가 다르면 실패</p>
+
+</div>
+
+</div>
+<div>
+
+<div class="highlight-box danger">
+
+### Underspecified Issues
+이슈 설명이 모호해서<br>무엇을 해결해야 하는지 불명확
+
+<hr>
+
+<p class="small">예: PR 토론 맥락 없이는 이슈 본문만으로 해결책을 특정할 수 없음</p>
+
+</div>
+
+</div>
+<div>
+
+<div class="highlight-box danger">
+
+### Environment Setup
+환경 설정 문제로<br>올바른 솔루션도 실패
+
+<hr>
+
+<p class="small">예: Deprecated API, 암묵적 의존성 버전 가정</p>
+
+</div>
+
+</div>
+</div>
+
+<div class="highlight-box warning" style="margin-top: 0.8em">
+
+**68.3% 필터링** → 원본 SWE-bench 점수가 실제 능력보다 **낮게** 측정되었을 가능성
+
+</div>
+
+<!--
+OpenAI Preparedness Team이 원본 SWE-bench를 직접 검토하면서 발견한 세 가지 핵심 문제입니다. 이 문제들은 모두 "올바른 솔루션이 테스트를 통과하지 못하는" 방향으로 작용합니다 → 모델 성능이 실제보다 낮게 측정됩니다.
+-->
+
+---
+
+# SWE-bench Verified 어노테이션
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
 ### 전문가 검증 프로세스
 - Upwork 모집 **93**명 전문 Python 개발자
-- **1,699**개 샘플 어노테이션
-- 전체 500개에 **3중 교차 검증**
-- 0~3점 심각도 체계로 평가
+- **1,699**개 샘플 수동 평가
+- **3중 교차 검증**으로 신뢰도 확보
+- 0~3점 심각도 스케일로 평가
+
+### 평가 기준
+- **이슈 명확도**: 이슈만 보고 해결책을 특정할 수 있는가?
+- **테스트 공정성**: 올바른 솔루션이 테스트를 통과하는가?
 
 </div>
 <div>
@@ -383,25 +743,68 @@ SWE-agent는 단순 LM API 호출이 아니라 "에이전트"로서 코드베이
 
 | 문제 유형 | 비율 |
 |----------|------|
-| 불명확한 문제 설명 | **38.3%** |
+| 불명확한 이슈 설명 | **38.3%** |
 | 부당한 테스트 케이스 | **61.1%** |
 | 전체 제거 비율 | **68.3%** |
 | **최종 선정** | **500개** |
+
+<div class="highlight-box info" style="margin-top: 0.5em; font-size: 0.85em">
+
+난이도: Easy(≤15분) 196개 / Hard(≥1시간) 45개
+
+</div>
 
 </div>
 </div>
 
 <!--
-Verified 제작 과정에서 밝혀진 충격적 사실:
-- 원본 SWE-bench의 68.3%가 어떤 형태로든 품질 문제가 있음
-- 특히 테스트 케이스가 61.1%에서 부당하게 정답을 거부할 수 있음
-- 이는 SWE-bench 점수가 실제 능력보다 낮게 측정되었을 수 있음을 의미
+93명 어노테이터가 1,699개를 평가해서 500개를 골랐습니다. 68.3% 필터링은 충격적인 수치입니다 - 원본 SWE-bench의 2/3 이상이 어떤 형태로든 품질 문제가 있다는 것을 의미합니다.
+-->
 
-난이도 분류: Easy 196개 (숙련 개발자 기준 <15분), Hard 45개 (>1시간), 나머지는 중간 난이도
-annotation scheme: 두 축(문제 설명 품질, 테스트 케이스 품질) 각각 0~3점, 어느 하나라도 ≥2이면 제거
+---
 
-기여: 1) 커뮤니티 표준 평가 세트, 2) 이슈 벤치마크 품질 실패 유형 분류법, 3) Docker 재현 환경, 4) HuggingFace 공개
-한계: Python-only 12개 레포 유지, 500개로 세밀한 능력 비교 어려움, 오염 위험 여전히 존재
+# SWE-bench Verified: Docker 평가 인프라
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 재현 가능한 평가 환경
+- SWE-bench 원저자와 협력하여<br>**컨테이너화된 Docker 환경** 구축
+- 기존 평가의 **재현성 문제 해결**
+- 각 인스턴스별 **독립 환경**으로<br>의존성 충돌 방지
+
+### 표준화된 평가
+- 모든 모델이 동일한 환경에서 평가
+- 평가 결과의 공정성 및 일관성 보장
+- 커뮤니티 표준 벤치마크로 자리잡음
+
+</div>
+<div>
+
+<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em">
+  <div class="stat-card green">
+    <div class="stat-number" style="font-size: 1.5em">500</div>
+    <div class="stat-label">최종 인스턴스</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" style="font-size: 1.5em">93</div>
+    <div class="stat-label">어노테이터</div>
+  </div>
+  <div class="stat-card yellow">
+    <div class="stat-number" style="font-size: 1.5em">33.2%</div>
+    <div class="stat-label">공개 당시<br>최고 성능(GPT-4o)</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-number" style="font-size: 1.5em">80%+</div>
+    <div class="stat-label">1년 반 후<br>최고 성능</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!--
+Docker 환경 표준화는 단순한 기술적 개선이 아닙니다. 이전에는 각 팀이 서로 다른 환경에서 평가했기 때문에 결과를 비교하기 어려웠습니다. Verified의 Docker 인프라가 커뮤니티 표준으로 자리잡으면서 공정한 비교가 가능해졌습니다.
 -->
 
 ---
@@ -455,36 +858,235 @@ Verified에서는 상위 모델이 80%를 돌파. Full에서 20%였던 것과 �
 
 </div>
 
-<p class="emphasis">→ 다국어 + 동적 갱신 벤치마크의 필요성</p>
+<p class="emphasis">→ 다언어 + 동적 갱신 벤치마크의 필요성</p>
 
 ---
 layout: section
 ---
 
-# Python을 넘어서
+# Multi-SWE-bench: 다언어 확장
 
-<p class="section-subtitle">다국어 벤치마크의 등장</p>
+<p class="section-subtitle">Python 편향을 넘어서 (2025)</p>
 
 ---
 
-# Multi-SWE-bench
-
-<p class="source">ByteDance Seed, NeurIPS 2025 Datasets & Benchmarks</p>
+# Multi-SWE-bench: 왜 필요한가?
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 규모
-- **7**개 언어
-- **1,632**개 인스턴스
-- **68**명 전문 어노테이터
-- 5단계 검증 파이프라인
-- 초기 RL 데이터셋 **4,723**개
+### SWE-bench/Verified의 한계
+- Python **전용** — 7개 언어의 특성 무시
+- Python 특화 에이전트를 그대로 다른 언어에 적용
+
+### 언어별 고유 특성
+| 차원 | 예시 |
+|------|------|
+| 패러다임 | OOP / 함수형 / 절차적 |
+| 타입 시스템 | 정적(Java, Rust) / 동적(JS, Python) |
+| 메모리 관리 | GC / 소유권(Rust) / 수동(C) |
+| 실행 모델 | 컴파일 / 인터프리터 / JIT |
 
 </div>
 <div>
 
-### 모델별 해결률
+<div class="highlight-box danger">
+
+### 핵심 질문
+Python에서 훈련·최적화된 에이전트를<br>
+**7개 언어로 일반화**할 수 있는가?
+
+</div>
+
+<div class="highlight-box info" style="margin-top: 1em">
+
+실제 개발 환경은 다양한 언어로 구성되어 있습니다. Python 점수로 "코딩 능력"을 일반화하는 것은 위험할 수 있습니다.
+
+</div>
+
+</div>
+</div>
+
+<!--
+SWE-bench/Verified의 Python 전용 한계가 왜 문제인지: 실제 산업 환경은 Java(백엔드), TypeScript(프론트엔드), Go(인프라), Rust(시스템) 등 다양한 언어가 공존합니다. Python 편향 평가로는 LLM의 실제 범용 코딩 능력을 측정할 수 없습니다.
+-->
+
+---
+
+# Multi-SWE-bench: 개요와 기여
+
+<p class="source">Zan et al., ByteDance Seed — NeurIPS 2025 Datasets & Benchmarks, arXiv:2504.02605</p>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-number">7</div>
+    <div class="stat-label">지원 언어<br>Java·TS·JS·Go·Rust·C·C++</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">39</div>
+    <div class="stat-label">레포지토리</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-number">1,632</div>
+    <div class="stat-label">최종 인스턴스<br>(2,456개 후보에서 선별)</div>
+  </div>
+  <div class="stat-card yellow">
+    <div class="stat-number">68</div>
+    <div class="stat-label">전문 어노테이터<br>(언어별 80%+ 정확도)</div>
+  </div>
+</div>
+
+### 핵심 기여
+- **9개 LLM × 3개 방법** 대규모 실증 평가 (GPT-4o, o1, o3-mini, Claude 3.5/3.7, DeepSeek-V3/R1 등)
+- **Multi-SWE-RL**: 76개 레포, 7개 언어, **4,723개** 컨테이너화 인스턴스 (RL 훈련용 별도 제공)
+
+<!--
+Multi-SWE-bench가 단순 벤치마크를 넘어선 이유: Multi-SWE-RL이라는 RL 훈련 데이터셋도 함께 제공하여 커뮤니티가 다언어 에이전트를 학습할 수 있도록 했습니다.
+-->
+
+---
+
+# Multi-SWE-bench: 5단계 구축 파이프라인
+
+<div class="grid grid-cols-2 gap-6">
+<div style="font-size: 0.82em">
+
+**Phase 1: 레포 선별**
+GitHub 스타 500+, CI/CD 설정 필수, 클린 빌드 가능
+
+**Phase 2: PR 수집**
+이슈 연결 + 테스트 수정 + 메인 병합 조건
+
+**Phase 3: 환경 결정**
+Docker 기반 격리 환경, 의존성 자동 수집, 빌드 실패 시 자동 수정 시도
+
+**Phase 4: PR 필터링**
+PASSED/FAILED/NONE/SKIPPED 상태전이 분석<br>
+→ **2,456개** 후보
+
+**Phase 5: 수동 검증**
+68명 어노테이터, 2인 독립 레이블링, 14명 내부 QA팀<br>
+필터링 공식: `Q2.1=0 AND Q3.1∈{2,3} AND Q4.1∈{2,3}`<br>
+→ **1,632개** 최종
+
+</div>
+<div>
+
+<img src="./images/05-zan2025-multi-swe-bench/fig2_construction_pipeline.jpg" style="width: 100%; border-radius: 8px" />
+
+</div>
+</div>
+
+<!--
+SWE-bench 대비 더 정교한 필터링: SWE-bench는 단순히 테스트 파일 수정 여부를 확인했지만, Multi-SWE-bench는 PASSED/FAILED/NONE/SKIPPED 상태전이를 정밀 분석합니다. 또한 2인 독립 레이블링 + 14명 내부 QA팀으로 품질을 보장합니다.
+-->
+
+---
+
+# Multi-SWE-bench: 데이터 특성
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 레포 규모 다양성
+- 파일 수: **24 ~ 27,632**개
+- 코드 규모: **6.7k ~ 698.6k** LoC
+
+### 언어별 이슈 스타일
+| 언어 | 이슈 특성 |
+|------|----------|
+| Java / Rust | 길고 상세한 설명 |
+| JS / Go / C | 짧고 핵심적 |
+
+### 패치 복잡도
+- Rust / C++: 대규모 리팩토링
+- JS / TS: 국소적·원자적 수정
+
+</div>
+<div>
+
+### 난이도 분류
+- **Easy** (≤15분): 단일 파일, 명확한 위치
+- **Medium** (15분~1시간): 다중 파일, 맥락 추론 필요
+- **Hard** (≥1시간): 아키텍처 이해 필요
+
+<div class="highlight-box warning" style="margin-top: 0.8em; font-size: 0.85em">
+
+난이도↑ → 이슈 길이↑, 패치 줄수↑, 수정 파일수↑<br>
+단, Easy에도 대규모 반복 수정이 존재<br>
+→ **표면적 지표만으로 난이도 추정 부정확**
+
+</div>
+
+</div>
+</div>
+
+<!--
+난이도 분류의 한계: 파일 수나 패치 줄수만으로 난이도를 추정하면 오류가 생깁니다. 예를 들어 Easy 난이도인데 같은 패턴을 30개 파일에 반복 적용하는 경우가 있습니다. 이 경우 패치 줄수는 많지만 실제 난이도는 낮습니다.
+-->
+
+---
+
+# Multi-SWE-bench: 실험 설계
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 3가지 방법론
+- **MAgentLess** — Agentless 확장판<br><span class="small">결함 위치 추정 정확도가 강점</span>
+- **MSWE-agent** — SWE-agent 확장판<br><span class="small">대화형 탐색 방식</span>
+- **MopenHands** — OpenHands 확장판<br><span class="small">7개 언어 중 5개에서 최고 성능</span>
+
+### 주요 다언어 적응
+- 언어별 프롬프트 수정
+- Tree-sitter 기반 함수 추출
+- `.gitignore`로 컴파일 산출물 제외
+- 탭 문자 렌더링 버그 수정
+
+</div>
+<div>
+
+### 9개 LLM 평가
+| 회사 | 모델 |
+|------|------|
+| OpenAI | GPT-4o, o1, o3-mini |
+| Anthropic | Claude 3.5 Sonnet, 3.7 Sonnet |
+| DeepSeek | DeepSeek-V3, DeepSeek-R1 |
+| Alibaba | Qwen2.5-72B |
+| ByteDance | Doubao-1.5-pro |
+
+</div>
+</div>
+
+<!--
+"확장판"의 의미: 각 방법론을 Python에서 7개 언어로 확장할 때 단순히 언어만 바꾸면 되지 않습니다. 각 언어의 AST 파서, 빌드 시스템, 테스트 프레임워크가 다르기 때문에 상당한 엔지니어링 작업이 필요합니다.
+-->
+
+---
+
+# Multi-SWE-bench: 언어별 성능 결과
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### 핵심 발견
+
+**성능 계층 구조:**
+- 고급 범용: Python, Java (상대적 강세)
+- 시스템: Go, Rust
+- 저수준: C, C++
+- 웹: TypeScript, JavaScript (약세)
+
+**Python 강자도 다른 언어에서 급락:**
+- o1: Python 48.2% → 타 언어 평균 크게 하락
+- Claude-3.7: Python 52.2%
+
+**Easy → Hard 갈수록 급감:**
+- Hard에서 대부분 모델 0% 근접
+- 현재 에이전트는 ≤15분 이슈에만 효과적
+
+</div>
+<div>
 
 <img src="./images/05-zan2025-multi-swe-bench/fig1_resolved_rate.jpg" style="width: 100%; border-radius: 8px" />
 
@@ -492,106 +1094,111 @@ layout: section
 </div>
 
 <!--
-Multi-SWE-bench의 구축 과정:
-1. GitHub에서 ≥500스타 레포 선별
-2. 이슈 연결 PR 수집
-3. Docker 기반 실행 환경 구성 (테스트 3가지 설정으로 검증)
-4. 68명 전문 어노테이터가 최소 80% 정확도 기준으로 이중 검증
-5. 2,456개 후보에서 1,632개 최종 선정
+성능 계층 구조의 원인: Python과 Java는 인터넷에 코드 예시가 풍부하고 LLM 훈련 데이터에 많이 포함됩니다. C/C++은 저수준 메모리 관리와 포인터 조작이 필요하고, TypeScript/JavaScript는 생태계 파편화가 심합니다.
 
-기여: 가장 광범위한 다국어 SWE 벤치마크 + Multi-SWE-RL 오픈소스 커뮤니티
-
-한계: 크로스 파일 수정과 긴 패치가 주요 실패 원인 / TypeScript 컨텍스트 오버플로우 문제 등 언어별 특수 문제 아직 미해결 / 현재 에이전트는 ~15분 이내 해결 가능한 이슈만 잘 처리함
+Hard 난이도에서 0%에 수렴하는 이유: 현재 에이전트 아키텍처(BM25 검색 + 패치 생성)가 단순 버그 픽스에는 효과적이지만, 아키텍처 수준의 변경이 필요한 복잡한 이슈에는 근본적 한계가 있습니다.
 -->
 
 ---
 
-# SWE-bench Multilingual
+# Multi-SWE-bench: 방법별 비교
 
-<p class="source">SWE-bench 원저자팀, NeurIPS 2025 (SWE-smith 논문과 함께 공개)</p>
-
-<div class="grid grid-cols-2 gap-8">
+<div class="grid grid-cols-2 gap-6">
 <div>
 
-### 규모
-- **9**개 언어
-- **42**개 레포지토리
-- **300**개 큐레이션 태스크
-- 반자동 + 수동 검증 결합
+### 방법별 강점 패턴 (Sankey 분석)
+
+**MAgentLess**
+- 위치 추정(Fault Localization) 정확
+- 하지만 편집 단계 약세
+
+**MopenHands**
+- 반대 패턴 — 편집 강세, 위치 추정 약세
+- 7개 언어 중 **5개에서 최고 성능**
+
+### 이슈 유형별 성능
+- **Bug Fix** ≫ New Feature > Feature Optimization
+- 현재 에이전트: 지역적·증상 기반 수리에 효과적
+- 전역 설계 변경에는 약함
 
 </div>
 <div>
 
-### 지원 언어
-- C, C++, Go, Java
-- JavaScript, TypeScript
-- PHP, Ruby, Rust
+<img src="./images/05-zan2025-multi-swe-bench/fig4_issue_flow.jpg" style="width: 100%; border-radius: 8px" />
 
-### 언어별 특징
-- Rust: **최고** 해결률
-- C/C++: **최저** 해결률
+<p class="source" style="text-align: center">이슈 유형별·방법별 흐름 분석</p>
 
 </div>
 </div>
 
 <!--
-SWE-bench Multilingual은 SWE-smith 논문의 부산물로 공개되었습니다. SWE-smith는 Python SWE 에이전트 학습 데이터를 자동 생성하는 파이프라인인데, Multilingual 벤치마크를 companion으로 제공했습니다.
-
-300개로 규모가 작습니다 (언어당 평균 33개). 이 때문에 세밀한 비교는 어렵고, 빠른 평가 목적에 적합합니다.
-
-Claude 3.7 Sonnet + SWE-agent 기준: Verified(Python) 63% vs Multilingual 43%. 이 20%p 격차가 Python 편향의 증거입니다.
+Sankey 분석의 의미: 각 방법론이 어떤 단계에서 실패하는지를 시각화합니다. MAgentLess는 "어디를 수정할지"는 잘 찾는데 실제 수정 코드 생성에서 실패가 많습니다. MopenHands는 반대입니다. 이 상호보완적 패턴은 앙상블 접근법의 가능성을 시사합니다.
 -->
 
 ---
 
-# Python vs 다국어 성능 격차
+# Multi-SWE-bench: 핵심 발견 요약
 
-<p class="chart-note">SWE-bench Verified (Python) vs Multilingual 해결률 (%)</p>
+<div class="grid grid-cols-2 gap-6" style="font-size: 0.88em">
+<div>
 
-<ChartMultilingual />
+<div class="highlight-box warning">
 
-<!--
-Claude 3.7 Sonnet 기준으로 Python에서 63%, Multilingual에서 43%로 무려 20%p 격차. LLM이 Python에 치우쳐 학습되어 있음을 보여줍니다.
+### 패치 길이의 벽
+패치 **600 토큰 초과** 시 해결률 ~50% 하락<br>
+1,000 토큰 이상 일부 언어에서 0%
 
-Multi-SWE-bench에서 더 극단적인 차이: Python 36~52% vs 다른 언어 1~21%.
--->
+</div>
 
----
+<div class="highlight-box warning" style="margin-top: 0.5em">
 
-# 다국어 벤치마크의 발견
+### 교차 파일 추론의 한계
+단일 파일: MAgentLess가 5개 언어에서 최고<br>
+다중 파일: 세 방법 **모두 저조**<br>
+→ 교차 파일 추론이 근본적 병목
 
-- **Python 편향**: Multi-SWE-bench에서 Python 36~52% vs 타 언어 1~21%
-- **Fault Localization** 실패가 주요 원인 — 수정할 파일을 못 찾는 것
-- 패치가 **600 토큰 초과** 시 성능 ~50% 감소
-- 난이도가 올라갈수록 해결률 급격히 하락 (쉬운 이슈 ~60% vs 어려운 이슈 ~2%)
+</div>
+
+</div>
+<div>
 
 <div class="highlight-box info">
 
-LLM의 코딩 능력은 **언어에 따라 크게 다르다**<br>
-Python 기준 점수로 일반화하면 안 된다
+### 이슈 길이 ≠ 난이도
+이슈 설명 길이와 해결률 간 일관된 관계 없음<br>
+Python: 긴 설명 → 해결률↓<br>
+Go: 긴 설명 → 해결률↑
 
 </div>
 
----
+<div class="highlight-box info" style="margin-top: 0.5em">
 
-# 다국어 벤치마크 비교
+### 비용 효율 격차
+DeepSeek-V3/R1: **$0.03 미만** (최저)<br>
+OpenAI-o1: **$3.75** (최고)<br>
+→ 100배 비용 차이 vs 성능 차이는 제한적
 
-| | Multi-SWE-bench | SWE-bench Multilingual |
-|--|-----------------|----------------------|
-| 주체 | ByteDance Seed | SWE-bench 원저자 |
-| 언어 수 | 7 | 9 |
-| 인스턴스 | 1,632 | 300 |
-| 검증 | 68명 전문가, 5단계 | 반자동 + 수동 |
-| RL 데이터 | 4,723개 별도 제공 | 미제공 |
-| 특징 | 대규모, 훈련용 포함 | 빠른 평가 목적 |
+</div>
+
+</div>
+</div>
+
+<!--
+핵심 시사점: 현재 에이전트 아키텍처는 "쉬운 버그 픽스"에는 효과적이지만 다음 한계가 있습니다:
+1. 긴 패치 생성 능력 부족 (600 토큰 벽)
+2. 교차 파일 추론 능력 부족
+3. 언어별 특성 이해 부족
+
+비용 효율 분석은 프로덕션 환경에서 중요합니다 - DeepSeek 시리즈가 비용 대비 성능이 우수합니다.
+-->
 
 ---
 layout: section
 ---
 
-# 불편한 진실
+# The SWE-Bench Illusion
 
-<p class="section-subtitle">데이터 오염 문제</p>
+<p class="section-subtitle">오염 문제</p>
 
 ---
 
@@ -714,6 +1321,40 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 
 ---
 
+# 파일 경로 정확도 비교
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### 데이터셋별 파일 경로 정확도
+
+오염도가 높을수록 → 파일 경로 정확도 높음
+
+| 데이터셋 | 정확도 |
+|---------|-------|
+| SWE-bench Verified | **76%** |
+| SWE-bench Full | 71% |
+| SWE-bench Extra | 68% |
+| 외부 레포지토리 | 53% |
+
+<p class="emphasis">23%p 격차 — 코드 없이 경로만 맞추는데</p>
+
+</div>
+<div>
+
+<img src="./images/07-liang2025-swe-bench-illusion/fig2_file_path_accuracy.jpg" style="width: 100%; border-radius: 8px" />
+
+<p class="source" style="text-align: center">모델별·데이터셋별 파일 경로 정확도</p>
+
+</div>
+</div>
+
+<!--
+이 그래디언트가 핵심 증거입니다: 만약 모델이 순수 추론으로 파일 경로를 맞춘다면, 데이터셋마다 정확도가 달라질 이유가 없습니다. 오염 정도에 따라 정확도가 체계적으로 달라진다는 것은 암기를 직접 증명합니다.
+-->
+
+---
+
 # 오염도 그래디언트
 
 <p class="chart-note">파일 경로 식별 정확도 (%) — 데이터 소스별</p>
@@ -728,16 +1369,17 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 
 # 암기의 정량적 증거
 
-<div class="grid grid-cols-2 gap-8">
+<div class="grid grid-cols-2 gap-6">
 <div>
 
 ### 함수 재현 실험 (5-gram 중복률)
+
+<img src="./images/07-liang2025-swe-bench-illusion/fig4_5gram_overlap.jpg" style="width: 100%; border-radius: 8px; margin-bottom: 0.3em" />
 
 | 데이터셋 | 최고 중복률 |
 |----------|------------|
 | SWE-bench Verified | **34.9%** |
 | SWE-bench Full | 28.7% |
-| SWE-bench Extra | 18.2% |
 | 외부 벤치마크 | 18.1% |
 
 </div>
@@ -751,6 +1393,12 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 | Claude 4 Sonnet | 21.4% |
 | GPT-4o | 17.4~18.4% |
 | Claude 3.7 Sonnet | 12.3% |
+
+<div class="highlight-box danger" style="margin-top: 0.5em; font-size: 0.85em">
+
+Claude 4 Opus: 코드 접두사에서<br>31.6%가 원본과 **정확히 일치**<br>→ 추론이 아니라 기억
+
+</div>
 
 </div>
 </div>
@@ -826,45 +1474,9 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 layout: section
 ---
 
-# 오염 대응 전략
+# SWE-rebench: 지속적 갱신
 
-<p class="section-subtitle">주기적 갱신 vs 접근 제한</p>
-
----
-
-# 두 가지 접근법
-
-<div class="grid grid-cols-2 gap-8">
-<div>
-
-<div class="highlight-box info">
-
-### 전략 A: 주기적 갱신
-지속적으로 새 태스크 생성하여<br>오염 창을 최소화
-
-<hr>
-
-- SWE-rebench
-- SWE-bench Live
-
-</div>
-
-</div>
-<div>
-
-<div class="highlight-box info">
-
-### 전략 B: 접근 제한
-학습 데이터에 포함될 수 없는<br>코드를 사용
-
-<hr>
-
-- SWE-bench Pro
-
-</div>
-
-</div>
-</div>
+<p class="section-subtitle">주기적 갱신 전략 (2025)</p>
 
 ---
 
@@ -902,93 +1514,71 @@ SWE-rebench의 4단계 파이프라인:
 
 핵심 발견: GPT-4.1이 2025년 3~4월 신규 태스크에서 기존 태스크보다 성능 하락 → SWE-bench Verified 점수 인플레이션 증거
 
-한계: 31% 설치 성공률이 낮음. Python-only. 표준화된 ReAct 스캐폴드 사용으로 모델별 최적화 없음. 테스트 패치 정확도 67%로 낮음.
+한계: 31% 설치 성공률이 낮음. Python-only. 표준화된 ReAct 스캐폴드 사용으로 모델별 최적화 없음.
 -->
 
 ---
 
-# SWE-bench Live
-
-<p class="source">Zhang et al., Microsoft Research, NeurIPS 2025 Datasets & Benchmarks</p>
-
-<div class="stat-grid">
-  <div class="stat-card">
-    <div class="stat-number">~50</div>
-    <div class="stat-label">월간 신규 태스크</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number">1,319</div>
-    <div class="stat-label">초기 인스턴스<br>(2024.1~2025.4)</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number">93</div>
-    <div class="stat-label">레포지토리</div>
-  </div>
-</div>
+# SWE-rebench: 핵심 발견
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-- 모델 학습 컷오프 **이후** 생성된 이슈만 사용
-- **RepoLaunch**: LLM 에이전트가 Docker 환경 자동 구축
-- **시간 되감기 메커니즘**: 커밋 시점의 패키지 버전만 설치
-
-</div>
-<div>
-
-<img src="./images/09-zhang2025-swe-bench-live/fig1_pipeline.jpg" style="width: 100%; border-radius: 8px" />
-
-</div>
-</div>
-
-<!--
-SWE-bench Live의 핵심 혁신 2가지:
-1. RepoLaunch: README, CI/CD 파이프라인을 파악해서 Docker 환경을 자동 구성하는 ReAct 에이전트. 기존 수동 작업 병목 제거.
-2. 시간 되감기 메커니즘: 패키지 매니저가 커밋 시점에 존재하던 버전만 설치하도록 강제. 의존성 버전 드리프트 문제를 근본적으로 해결.
-
-기여: 최초의 오염 저항 동적 벤치마크, 93개 레포 폭넓은 커버리지, >2x 성능 격차 실증
-
-한계: Python-only 초기 버전, 예산 제약으로 반복 실험 없음, Agentless reranking 단계 생략
--->
-
----
-
-# SWE-bench Live: 성능 격차
+### 점수 인플레이션 실증
 
 <div class="highlight-box danger">
 
-### >2배 격차의 의미
-OpenHands + Claude 3.7 Sonnet 기준:
-- SWE-bench **Verified**: 43.2%
-- SWE-bench **Live**: 19.25%
+GPT-4.1이 **신규 태스크**(2025년 3~4월)에서<br>기존 SWE-bench Verified보다 성능 하락
+
+→ 높은 Verified 점수의 상당 부분이<br>**오염/과적합**에 기인할 가능성
 
 </div>
 
-<div class="grid grid-cols-2 gap-8">
-<div>
+<div class="highlight-box warning" style="margin-top: 0.8em">
 
-### 패치 복잡도별 성능
-| 파일 수 | 해결률 |
-|---------|-------|
-| 1개 파일, <5줄 | ~48% |
-| 3개+ 파일 | <10% |
-| 7개+ 파일 | **0%** |
+### 자동화-품질 트레이드오프
+- LLM이 자동 생성한 Docker 레시피<br>→ 설치 성공률 **31%** (매우 낮음)
+- 품질 자동 평가: 이슈 명확도 79%,<br>복잡도 81% (인간 대비)
 
-- 정적 벤치마크 점수의 상당 부분이<br>오염/과적합에 기인할 가능성
+</div>
 
 </div>
 <div>
 
-<img src="./images/09-zhang2025-swe-bench-live/fig4_performance_vs_date.jpg" style="width: 100%; border-radius: 8px" />
+### 시사점
+
+<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em">
+  <div class="stat-card">
+    <div class="stat-number" style="font-size: 1.4em">3,468</div>
+    <div class="stat-label">다양한 레포<br>(vs Verified 12개)</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-number" style="font-size: 1.4em">31%</div>
+    <div class="stat-label">설치 성공률<br>자동화의 한계</div>
+  </div>
+</div>
+
+<div class="highlight-box info" style="margin-top: 0.5em; font-size: 0.85em">
+
+대규모 자동화 ↑ → 개별 샘플 품질 ↓<br>
+이 트레이드오프가 주기적 갱신 전략의<br>핵심 과제입니다
+
+</div>
 
 </div>
 </div>
 
 <!--
-이 >2배 격차는 매우 강한 증거입니다. 동일한 모델, 동일한 에이전트, 동일한 평가 방법으로 단지 "이슈가 오래됐냐 새것이냐"만 달랐는데 이렇게 큰 차이가 납니다.
-
-물론 새 이슈가 더 어렵거나 다른 분포일 수 있다는 반론이 있습니다. 하지만 2024Q1~2025Q1 동안 해결률이 일정하게 유지됐다는 점 (특정 기간만 어렵지 않다는 것)이 난이도 설명을 약화시킵니다.
+SWE-rebench의 가장 중요한 기여는 "점수 인플레이션 실증"입니다. 같은 모델(GPT-4.1)로 오래된 태스크(Verified)와 새 태스크(2025년 이후)를 비교했을 때 성능 차이가 나타난다면, 이는 오래된 태스크에 과적합이 일어났다는 증거입니다.
 -->
+
+---
+layout: section
+---
+
+# SWE-bench Pro: 접근 제한
+
+<p class="section-subtitle">비공개 코드 기반 평가 (2025)</p>
 
 ---
 
@@ -1041,6 +1631,37 @@ Commercial Set은 더욱 강력: 스타트업과 파트너십을 맺어 미공�
 
 ---
 
+# SWE-bench Pro: 데이터 분포
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### Public 데이터셋 특성
+- 평균 패치: **107.4줄 / 4.1개 파일**
+- 최소 10줄 의무화 (단순 수정 제외)
+- SWE-bench Verified(32.8줄/1.7파일) 대비 **3~4배 복잡**
+
+### 태스크 카테고리
+- Bug Fix: 가장 높은 비율
+- New Feature: 기능 추가
+- Feature Optimization: 개선
+
+</div>
+<div>
+
+<img src="./images/10-deng2025-swe-bench-pro/fig2_dataset_distributions.jpg" style="width: 100%; border-radius: 8px" />
+
+<p class="source" style="text-align: center">파일 수 분포 + 태스크 카테고리 분포</p>
+
+</div>
+</div>
+
+<!--
+SWE-bench Pro의 복잡도 강조: 평균 패치 107.4줄, 4.1개 파일은 SWE-bench Verified(32.8줄, 1.7파일)의 약 3배입니다. 이는 더 현실적인 엔지니어링 작업을 반영합니다. 단순 버그 픽스가 아닌 실질적인 소프트웨어 개발 능력을 테스트합니다.
+-->
+
+---
+
 # Public vs Private: 현실 격차
 
 <p class="chart-note">SWE-bench Pro 해결률 (%) — Public vs Private</p>
@@ -1049,6 +1670,43 @@ Commercial Set은 더욱 강력: 스타트업과 파트너십을 맺어 미공�
 
 <!--
 Private 코드에서의 성능 하락이 모델의 "진짜 실력"에 더 가까울 수 있습니다. GPT-5의 경우 23.1% → 14.9%로 8.2%p 하락.
+-->
+
+---
+
+# SWE-bench Pro: 언어별 성능
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### 주요 발견
+- 파일 수 증가 → 모든 모델 성능 급락
+- 코드 줄수 증가 → 동일 경향
+- 언어별 성능 편차 존재
+  - 상대적 강세: Python, Java
+  - 상대적 약세: C/C++, Rust
+
+<div class="highlight-box warning" style="margin-top: 0.8em; font-size: 0.85em">
+
+**교차 파일 추론** 능력 부족이<br>공통 병목으로 확인됨<br>
+(Multi-SWE-bench 발견과 일치)
+
+</div>
+
+</div>
+<div>
+
+<img src="./images/10-deng2025-swe-bench-pro/fig3_model_perf_by_language.jpg" style="width: 100%; border-radius: 8px" />
+
+<p class="source" style="text-align: center">파일 수별 / 줄 수별 / 언어별 / 레포별 성능</p>
+
+</div>
+</div>
+
+<!--
+SWE-bench Pro의 언어별 분석이 Multi-SWE-bench의 발견을 보강합니다. 두 벤치마크 모두 교차 파일 추론 능력 부족을 핵심 병목으로 지목합니다.
+
+파일 수 증가에 따른 성능 급락은 현재 에이전트 아키텍처의 근본적 한계를 보여줍니다.
 -->
 
 ---
@@ -1074,7 +1732,7 @@ Private 코드에서의 성능 하락이 모델의 "진짜 실력"에 더 가까
 <!--
 실패 분석의 시사점:
 1. 모델마다 다른 실패 패턴: Opus 4.1은 솔루션 오류가 많고, 오픈소스 모델은 도구 사용 실패가 많음
-2. 컨텍스트 오버플로우: 긴 코드베이스를 다 읽으려다 컨텍스트 창이 가득 찬 경우. 더 스마트한 컨텍스트 관리가 필요함
+2. 컨텍스트 오버플로우: 긴 코드베이스를 다 읽으려다 컨텍스트 창이 가득 찬 경우
 3. 무한 파일 읽기: 어디를 수정해야 할지 몰라서 계속 파일을 탐색하다 종료. Fault Localization 능력 부족의 또 다른 증거
 
 한계: 비공개 Commercial Set 접근 제한으로 커뮤니티 재현 어려움 / Java, C++, Rust 언어 비중 낮음 / 에이전트 50턴, $2 비용 상한선
@@ -1086,10 +1744,10 @@ Private 코드에서의 성능 하락이 모델의 "진짜 실력"에 더 가까
 
 | | 주기적 갱신 | 접근 제한 |
 |--|------------|----------|
-| 대표 | SWE-rebench, Live | SWE-bench Pro |
-| 장점 | 대규모, 자동화 | 오염 근본 차단 |
+| 대표 | SWE-rebench | SWE-bench Pro |
+| 장점 | 대규모, 자동화, 최신 이슈 | 오염 근본 차단 |
 | 단점 | <span class="red">개별 샘플 품질 저하</span> | <span class="red">라이선스 일관성 문제</span> |
-| 한계 | 갱신 주기 내 오염 가능 | 새 기술 패러다임 반영 어려움 |
+| 한계 | 갱신 주기 내 오염 가능 (31% 설치 성공률) | 새 기술 패러다임 반영 어려움 |
 
 <p class="emphasis">두 전략 모두 완벽하지 않다 — 상호보완적 접근 필요</p>
 
@@ -1100,45 +1758,6 @@ layout: section
 # 남은 과제와 전망
 
 <p class="section-subtitle">벤치마크 너머의 소프트웨어 엔지니어링</p>
-
----
-
-# SWEBOK V4와 현실의 괴리
-
-<p class="chart-note">SWEBOK V4: 18개 지식 영역 — 벤치마크 커버리지</p>
-
-<div class="swebok-grid">
-  <div class="swebok-item covered">소프트웨어 구현(Construction)</div>
-  <div class="swebok-item covered">소프트웨어 테스팅</div>
-  <div class="swebok-item partial">소프트웨어 유지보수</div>
-  <div class="swebok-item partial">소프트웨어 보안</div>
-  <div class="swebok-item uncovered">요구사항 공학</div>
-  <div class="swebok-item uncovered">소프트웨어 설계</div>
-  <div class="swebok-item uncovered">소프트웨어 아키텍처</div>
-  <div class="swebok-item uncovered">형상 관리</div>
-  <div class="swebok-item uncovered">소프트웨어 품질</div>
-  <div class="swebok-item uncovered">소프트웨어 공학 운영</div>
-  <div class="swebok-item uncovered">소프트웨어 공학 관리</div>
-  <div class="swebok-item uncovered">소프트웨어 공학 프로세스</div>
-  <div class="swebok-item uncovered">소프트웨어 공학 모델/방법론</div>
-  <div class="swebok-item uncovered">소프트웨어 공학 전문실무</div>
-  <div class="swebok-item uncovered">소프트웨어 공학 경제학</div>
-  <div class="swebok-item uncovered">컴퓨팅 기초</div>
-  <div class="swebok-item uncovered">수학 기초</div>
-  <div class="swebok-item uncovered">공학 기초</div>
-</div>
-
-<div class="swebok-legend">
-  <span class="legend-item covered">벤치마크 존재</span>
-  <span class="legend-item partial">부분적 평가</span>
-  <span class="legend-item uncovered">벤치마크 부재</span>
-</div>
-
-<!--
-SWEBOK V4 기준 18개 지식 영역 중 벤치마크가 존재하는 것은 극소수. 현재 벤치마크는 소프트웨어 엔지니어링의 극히 일부만 평가하고 있습니다.
-
-요구사항 공학, 아키텍처, 관리 영역이 빠진 이유: 정량적 자동 평가가 어렵기 때문입니다. "좋은 아키텍처"를 자동으로 점수 매기는 방법이 없습니다.
--->
 
 ---
 
@@ -1162,42 +1781,83 @@ SWEBOK V4 기준 18개 지식 영역 중 벤치마크가 존재하는 것은 극
   <div class="timeline-item">
     <div class="timeline-year">2024</div>
     <div class="timeline-content">
-      <strong>Verified / Multilingual</strong> — 품질 보장, 다국어 확장<br>
+      <strong>Verified / Multi-SWE-bench</strong> — 품질 보장, 다언어 확장<br>
       <span class="small">→ 한계: 오염 문제 부각, Python 편향 여전히 20%p+</span>
     </div>
   </div>
   <div class="timeline-item">
     <div class="timeline-year">2025</div>
     <div class="timeline-content">
-      <strong>rebench / Live / Pro</strong> — 오염 대응, 장기 과제<br>
-      <span class="small">→ 한계: 자동화-품질 균형, >2x 성능 격차 여전히 존재</span>
+      <strong>rebench / Pro</strong> — 오염 대응, 장기 과제<br>
+      <span class="small">→ 한계: 자동화-품질 균형 (31% 설치 성공률), Private 코드 접근 제한</span>
     </div>
   </div>
 </div>
 
 ---
 
-# 핵심 메시지
+# 맺음말
 
 <div class="key-messages">
   <div class="key-message">
     <span class="msg-number">1</span>
-    <p>벤치마크 점수는 <strong>종합적 SW 엔지니어링 역량</strong>을 대변하지 않는다</p>
+    <p>현재 벤치마크 숫자만으로 <strong>SW 엔지니어링 능력</strong>을 판단하기는 어렵다<br>
+    <span class="small">— SWEBOK 18개 영역 중 코딩 일부만 평가, 오염 가능성 상존</span></p>
   </div>
   <div class="key-message">
     <span class="msg-number">2</span>
-    <p><strong>자동화와 품질</strong>의 균형은 벤치마크 설계의 근본적 딜레마다</p>
+    <p><strong>다양한 언어와 환경</strong>을 포괄하면서도 <strong>오염에 강건한</strong> 벤치마크가 필요하다<br>
+    <span class="small">— Python 편향 20%p+, Live/Pro의 >2배 격차가 그 필요성을 실증</span></p>
   </div>
   <div class="key-message">
     <span class="msg-number">3</span>
-    <p><strong>에이전틱 코딩 시대</strong>의 평가 방식은 아직 정립되지 않았다</p>
+    <p><strong>자동화와 품질</strong> 사이의 적정 지점을 찾는 것이 핵심 설계 과제다<br>
+    <span class="small">— 31% 설치 성공률(rebench) vs 비공개 코드 접근 제한(Pro)</span></p>
+  </div>
+  <div class="key-message">
+    <span class="msg-number">4</span>
+    <p><strong>에이전틱 코딩</strong> 시대에 맞는 새로운 평가 방식 설계가 시작되고 있다<br>
+    <span class="small">— 멀티파일 수정, 장기 태스크, 대화형 디버깅을 포함하는 방향으로</span></p>
   </div>
 </div>
 
 <!--
-세 가지 핵심 메시지를 강조하며 마무리합니다.
+맺음말: 벤치마크를 만드는 것과 신뢰할 수 있는 벤치마크를 만드는 것은 다릅니다. 우리가 "측정하고 있다고 생각하는 것"과 "실제로 측정되는 것"이 다를 수 있습니다.
+-->
 
-추가로 강조할 점: 벤치마크를 만드는 것과 신뢰할 수 있는 벤치마크를 만드는 것은 다릅니다. SWE-bench의 68% 품질 문제, Illusion 논문의 암기 증거는 우리가 "측정하고 있다고 생각하는 것"과 "실제로 측정되는 것"이 다를 수 있음을 보여줍니다.
+---
+
+# 디스커션: 앞으로의 방향?
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 열린 질문들
+
+- 어떤 벤치마크가 **SE 역량**을 가장 잘 반영할까?
+- **오염을 완전히 막는 것**은 가능한가?
+- **에이전틱 코딩** 시대의 평가는 어떻게 달라져야 하나?
+- 벤치마크 점수를 **어떻게 신뢰**할 수 있나?
+
+</div>
+<div>
+
+### 여러분의 생각은?
+
+<div class="highlight-box info" style="margin-top: 1em">
+
+지금 사용하시는 코딩 도구를 어떻게 평가하시나요?<br>
+벤치마크 점수가 그 판단에 얼마나 영향을 미치나요?
+
+</div>
+
+</div>
+</div>
+
+<p class="title-meta" style="margin-top: 1.5em">감사합니다</p>
+
+<!--
+Q&A 대신 디스커션으로 진행합니다. 청중의 경험과 생각을 끌어내는 방향으로 진행하세요.
 -->
 
 ---
@@ -1220,13 +1880,7 @@ SWEBOK V4 기준 18개 지식 영역 중 벤치마크가 존재하는 것은 극
 <li>Hu et al., "Assessing and Advancing Benchmarks for Evaluating LLMs in SE Tasks," arXiv:2505.08903, 2025</li>
 <li>Mundler et al., "SWT-Bench: Assessing Capabilities at Unit Test Generation," NeurIPS 2024</li>
 <li>Wang et al., "SDLC Perspective: A Survey of Benchmarks for Code LLMs and Agents," arXiv:2505.05283, 2025</li>
+<li>Xia, Deng, Zhang, "EvoEval: Evolving Coding Benchmarks via LLM," COLM 2024, arXiv:2403.19114</li>
+<li>Yang et al., "Unveiling the Pitfalls of Knowledge Editing for Large Language Models," arXiv:2311.04850, 2023</li>
 </ol>
 </div>
-
----
-layout: center
----
-
-# Q&A
-
-<p class="title-meta">감사합니다</p>
