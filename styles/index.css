@@ -38,15 +38,15 @@
    ============================================ */
 
 .agenda-list {
-  font-size: 1.05em;
+  font-size: 0.95em;
   text-align: left;
   max-width: 600px;
   margin: 0 auto;
 }
 
 .agenda-list li {
-  margin-bottom: 0.5em;
-  padding: 0.3em 0;
+  margin-bottom: 0.15em;
+  padding: 0.1em 0;
 }
 
 /* ============================================
