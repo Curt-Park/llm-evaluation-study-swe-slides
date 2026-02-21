@@ -750,7 +750,7 @@ pass-to-pass 테스트 중간값 51개 — 패치 하나로 기존 51개 테스�
 <div>
 
 <img src="./images/03-jimenez2024-swe-bench/table5.jpg" style="width: 100%; border-radius: 6px" />
-<p class="source" style="text-align: center; margin-top: 0.3em">Table 5: BM25 검색 시 해결률<br>Claude 2 <strong>1.97%</strong></p>
+<p class="source" style="text-align: center; margin-top: 0.3em">Table 5: BM25 검색 시 해결률<br>Claude 2 <strong>1.96%</strong></p>
 
 </div>
 <div>
@@ -2111,7 +2111,7 @@ layout: section
 3. 오염은 실재하고 정량화된다 — Illusion 논문의 76% vs 53%
 4. 완벽한 해법은 없지만 방향은 있다 — 갱신과 접근 제한의 조합
 
-여러분이 다음에 새 LLM 발표를 볼 때 "SWE-bench Pro 23.1% 달성!"이라는 숫자를 보시면, 오늘의 맥락에서 읽어주세요.
+여러분이 다음에 새 LLM 발표를 볼 때 "SWE-bench Pro 41.8% 달성!"이라는 숫자를 보시면, 오늘의 맥락에서 읽어주세요.
 -->
 
 ---
