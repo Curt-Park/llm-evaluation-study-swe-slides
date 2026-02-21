@@ -1155,14 +1155,48 @@ ByteDance Seed 팀의 2025년 연구입니다.
 
 ---
 
-# Multi-SWE-bench: 개요와 기여
+# Multi-SWE-bench: 핵심 기여 3가지
 
 <p class="source">Zan et al., ByteDance Seed — NeurIPS 2025 Datasets & Benchmarks, arXiv:2504.02605</p>
 
-<div class="stat-grid">
+<div class="grid grid-cols-3 gap-6" style="margin-top: 0.5em">
+<div class="highlight-box info">
+
+**① 다언어 벤치마크**
+
+7개 언어 × 39개 레포<br>
+**1,632개** 고품질 인스턴스<br>
+68명 전문 어노테이터 검증
+
+<p class="small" style="margin-top:0.5em">2,456개 후보 → 엄격한 필터링</p>
+
+</div>
+<div class="highlight-box info">
+
+**② 대규모 실증 평가**
+
+**9개 LLM × 3가지 방법**<br>
+GPT-4o, o1, o3-mini<br>
+Claude 3.5/3.7, DeepSeek-V3/R1<br>
+Qwen2.5-72B, Doubao-1.5-pro
+
+</div>
+<div class="highlight-box info">
+
+**③ Multi-SWE-RL**
+
+RL 훈련용 오픈소스 데이터셋<br>
+76개 레포 / 7개 언어<br>
+**4,723개** 컨테이너화 인스턴스<br>
+전체 파이프라인 공개
+
+</div>
+</div>
+
+<div class="stat-grid" style="grid-template-columns: repeat(4, 1fr); gap: 0.6em; margin-top: 1em">
   <div class="stat-card">
     <div class="stat-number">7</div>
-    <div class="stat-label">지원 언어<br>Java·TS·JS·Go·Rust·C·C++</div>
+    <div class="stat-label">지원 언어</div>
   </div>
   <div class="stat-card">
     <div class="stat-number">39</div>
@@ -1170,53 +1204,135 @@ ByteDance Seed 팀의 2025년 연구입니다.
   </div>
   <div class="stat-card">
     <div class="stat-number">1,632</div>
-    <div class="stat-label">최종 인스턴스<br>(2,456개 후보에서 선별)</div>
+    <div class="stat-label">최종 인스턴스</div>
   </div>
   <div class="stat-card">
     <div class="stat-number">68</div>
-    <div class="stat-label">전문 어노테이터<br>(언어별 80%+ 정확도)</div>
+    <div class="stat-label">전문 어노테이터</div>
   </div>
 </div>
 
-### 핵심 기여
-- **9개 LLM × 3개 방법** 대규모 실증 평가 (GPT-4o, o1, o3-mini, Claude 3.5/3.7, DeepSeek-V3/R1 등)
-- **Multi-SWE-RL**: 76개 레포, 7개 언어, **4,723개** 컨테이너화 인스턴스 (RL 훈련용 별도 제공)
-
 <!--
-7개 언어, 39개 레포, 1,632개 인스턴스. 비교: SWE-bench Verified는 Python만, 500개였습니다.
+ByteDance Seed 팀의 3가지 기여입니다.
 
-68명 어노테이터 — 단순히 많은 게 아니라 각 언어별 전문가를 확보했습니다. 80%+ 정확도 기준을 통과한 어노테이터만 참여했습니다.
+①: 벤치마크 자체 — SWE-bench가 Python 12개 레포였다면, Multi-SWE-bench는 7개 언어 39개 레포로 확장. 단순 수집이 아니라 68명 전문가가 검증.
 
-Multi-SWE-RL은 보너스: 76개 레포, 4,723개 컨테이너화 인스턴스를 RL 훈련용으로 별도 제공합니다. 벤치마크뿐 아니라 훈련 인프라까지 커뮤니티에 기여한 것입니다.
+②: 대규모 평가 — 단일 모델이 아니라 9개 LLM × 3가지 에이전트 방법론으로 체계적으로 실증. "Python 강자가 다언어에서도 강한가"를 데이터로 확인.
+
+③: Multi-SWE-RL — 벤치마크에서 끝나지 않고 RL 훈련용 데이터셋까지 제공. 평가만이 아니라 더 나은 모델을 만들 수 있는 인프라를 커뮤니티에 기여.
 -->
 
 ---
 
-# Multi-SWE-bench: 언어별 성능 결과
+# Multi-SWE-bench: 데이터 구축 파이프라인
 
-<div class="grid grid-cols-2 gap-6">
+<div class="grid grid-cols-2 gap-8">
 <div>
 
-### 핵심 발견
-
-**성능 계층 구조:**
-- 고급 범용: Python, Java (상대적 강세)
-- 시스템: Go, Rust
-- 저수준: C, C++
-- 웹: TypeScript, JavaScript (약세)
-
-**Python 강자도 다른 언어에서 급락:**
-- o1: Python 48.2% → 타 언어 평균 크게 하락
-- Claude-3.7: Python 52.2%
-
-**Easy → Hard 갈수록 급감:**
-- Hard에서 대부분 모델 0% 근접
-- 현재 에이전트는 ≤15분 이슈에만 효과적
+<div style="display:flex; flex-direction:column; gap:0.45em">
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#3b82f6; color:white; border-radius:50%; width:1.6em; height:1.6em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">1</div>
+    <div><strong>레포지토리 선정</strong><br><span class="small">GitHub stars 500+ · 활동기간 6개월+ · CI/CD 보유</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#3b82f6; color:white; border-radius:50%; width:1.6em; height:1.6em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">2</div>
+    <div><strong>PR 수집</strong><br><span class="small">이슈 연결 + 테스트 파일 수정 + main 브랜치 머지</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#3b82f6; color:white; border-radius:50%; width:1.6em; height:1.6em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">3</div>
+    <div><strong>Docker 환경 구성</strong><br><span class="small">CI/CD 워크플로우 · 문서에서 의존성 추출</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#6366f1; color:white; border-radius:50%; width:1.6em; height:1.6em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">4</div>
+    <div><strong>실행 기반 필터링</strong><br><span class="small">3가지 로그(Run/Test/Fix) 테스트 상태 전이 분석<br>fail-to-pass 없거나 비정상 거동 → 제거<br><strong>2,456개</strong> 확보</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#8b5cf6; color:white; border-radius:50%; width:1.6em; height:1.6em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">5</div>
+    <div><strong>전문가 수동 검증</strong><br><span class="small">2명 독립 어노테이션 → 교차 검토<br>언어별 80%+ 정확도 기준 (내부 QA 14명 검증)<br>2,456개 → <strong>1,632개</strong></span></div>
+  </div>
+</div>
 
 </div>
 <div>
 
-<img src="./images/05-zan2025-multi-swe-bench/fig1_resolved_rate.jpg" style="width: 100%; border-radius: 8px" />
+### 어노테이터 자격 기준
+- 해당 언어 **2년 이상** 경험
+- 관련 전공 학위 보유
+- 1시간 사전 교육 (목표·절차·기준)
+- 내부 QA팀 14명이 정답 생성 후 검증
+
+<div class="highlight-box warning" style="margin-top: 0.8em; font-size:0.88em">
+
+**테스트 상태 전이 기준**<br>
+✅ 유지: `FAIL → PASS` (새 테스트 통과)<br>
+❌ 제거: `ANY → PASS → FAIL` 비정상 거동<br>
+❌ 제거: `fail-to-pass` 전이 없는 PR
+
+</div>
+
+</div>
+</div>
+
+<!--
+5단계 파이프라인의 핵심은 "자동화(1~4단계) + 인간 검증(5단계)"의 결합입니다.
+
+1~2단계: 대규모 수집. GitHub 조건으로 걸러서 품질 있는 레포/PR만 시작점으로.
+3단계: Docker 환경이 핵심 — 언어마다 빌드/테스트 환경이 전혀 다릅니다. CI/CD 워크플로우에서 자동으로 추출.
+4단계: 실행 기반 필터링 — Run.log/Test.log/Fix.log 3가지 상태를 분석해서 "패치가 실제로 버그를 고쳤는지" 확인. 비정상 거동 제거.
+5단계: 인간 전문가 이중 검증 — 단순 크라우드소싱이 아니라 언어 경험 2년 이상 + 80% 정확도 기준.
+
+결과: 2,456 → 1,632개 (33% 추가 제거). 자동 필터를 통과해도 전문가가 다시 걸러냅니다.
+-->
+
+---
+
+# Multi-SWE-bench: 실험 결과
+
+<div class="grid grid-cols-2 gap-6">
+<div>
+
+### 방법론별 최고 성능 (해결률 %)
+
+| 언어 | MAgentLess | MSWE-agent | MopenHands |
+|------|:---------:|:----------:|:---------:|
+| **Python** | 36.2 | 45.8 | **52.2** |
+| **Java** | 11.7 | **23.4** | 21.9 |
+| **Rust** | 5.9 | 6.7 | **15.9** |
+| **C++** | 7.0 | 11.6 | **14.7** |
+| **Go** | 2.8 | 5.4 | **7.5** |
+| **C** | 1.6 | 8.6 | **8.6** |
+| **TypeScript** | 2.2 | **11.2** | 2.2 |
+| **JavaScript** | 1.4 | 4.8 | **5.1** |
+
+<p class="small" style="margin-top:0.4em">모델: MAgentLess=GPT-4o, MSWE-agent/MopenHands=Claude-3.7</p>
+
+</div>
+<div>
+
+### 핵심 발견
+
+<div class="highlight-box danger" style="font-size:0.88em; margin-bottom:0.6em">
+
+**Python → 타 언어 급락**<br>
+MopenHands: Python **52.2%** → Java **21.9%** → JS **5.1%**
+
+</div>
+
+<div class="highlight-box warning" style="font-size:0.88em; margin-bottom:0.6em">
+
+**Easy → Hard 붕괴**<br>
+Python Easy: **71.7%** → Hard: **11.1%**<br>
+타 언어 Hard: 대부분 **0% 근접**
+
+</div>
+
+<div class="highlight-box info" style="font-size:0.88em">
+
+**성능 저하 트리거**<br>
+패치 > 600 토큰 or 파일 2개 이상 수정 시<br>
+모든 언어·방법에서 성능 급락
+
+</div>
 
 </div>
 </div>
@@ -1224,11 +1340,14 @@ Multi-SWE-RL은 보너스: 76개 레포, 4,723개 컨테이너화 인스턴스�
 <!--
 [~42분 경과]
 
-핵심 발견: Python 최강자(o1 48.2%, Claude 3.7 52.2%)도 다른 언어로 가면 성능이 크게 하락합니다. "다언어 코딩 능력"이 "Python 코딩 능력"과 다르다는 실증입니다.
+테이블에서 보이는 패턴:
+- Python과 타 언어의 격차가 압도적입니다. 최고 방법(MopenHands)으로도 Python 52% vs JavaScript 5%.
+- MopenHands가 5개 언어에서 1위 — OpenHands 프레임워크가 다언어에 상대적으로 강합니다.
+- TypeScript는 MSWE-agent가 11.2%로 MopenHands(2.2%)를 압도 — 언어별로 최적 방법이 다릅니다.
 
-Hard 난이도에서 0% 수렴: 현재 AI 에이전트는 15분 이내에 해결할 수 있는 단순 버그 픽스에만 실질적으로 효과적입니다. 아키텍처 이해가 필요한 복잡한 이슈는 아직 한계가 있습니다.
+Easy→Hard 붕괴: Python에서도 Easy 71.7% → Hard 11.1%입니다. 타 언어 Hard는 거의 0%. 현재 AI 에이전트는 "15분 이내 버그 픽스"에만 실질적으로 효과적입니다.
 
-TypeScript/JavaScript 약세: 생태계 파편화와 다양한 프레임워크/빌드 도구가 에이전트를 혼란스럽게 만드는 경향이 있습니다.
+600 토큰 / 멀티파일 트리거: 단일 함수 수준의 수정은 잘하지만, 여러 파일에 걸친 아키텍처적 이해가 필요한 수정은 아직 한계.
 
 전환: 이처럼 벤치마크가 발전하면서 동시에 새로운 문제가 부각됩니다 — 오염 문제입니다.
 -->
@@ -1262,7 +1381,7 @@ layout: section
 **평가 모델**: OpenAI 6개 + Anthropic 4개<br>
 (GPT-4o, o3, Claude 3.5~4.0 등 **10개** 모델)
 
-**비교 대상**: SWE-bench Verified, Full, Extra, 외부 레포
+**비교 대상**: SWE-bench Verified · Full · Extra(추가 이슈) · 외부 레포(훈련 미포함)
 
 </div>
 <div>
@@ -1306,9 +1425,9 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 
 **실험 2**<br>함수 재현
 
-이슈 설명 + 파일(함수 제거)로<br>정확한 함수 구현 재현
+이슈 설명 + 해당 함수를 지운 파일로<br>삭제된 함수를 다시 구현하도록 요청
 
-원본과 연속 5단어가 얼마나 겹치는지 측정<br><span class="small">(텍스트 암기의 정량 지표)</span>
+원본과 연속 5단어가 얼마나 겹치는지 측정<br><span class="small">(5-gram 중복률: 텍스트 암기의 정량 지표)</span>
 
 </div>
 
@@ -1319,9 +1438,9 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 
 **실험 3**<br>접두사 완성
 
-PR 수정 전 코드 접두사에서<br>원본 코드 완성
+버그 수정 전 코드의 앞부분만 보여주고<br>나머지 코드를 완성하도록 요청
 
-정확한 문자열 일치율 측정
+원본과 정확히 같은 문자열이<br>얼마나 나오는지 측정
 
 </div>
 
@@ -1357,7 +1476,7 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 
 - 모델에게 **이슈 설명만** 제공 (코드 접근 불가)
 - 버그가 있는 파일의 경로를 예측하도록 요청
-- 코드를 보지 않고도 경로를 맞출 수 있다면?
+- 코드를 보지 않고 경로를 맞힌다 → **훈련 데이터를 기억**하고 있다는 의미
 
 <!--
 76% — 코드를 전혀 보지 않고, 이슈 설명만으로 어느 파일인지 76%를 맞춥니다. 상식적으로 이것은 불가능합니다. 단지 이슈 텍스트를 읽고 어느 파일 경로인지 추론하는 것은 코드 구조를 모르면 할 수 없습니다.
@@ -1388,7 +1507,9 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 | SWE-bench Verified | **76%** |
 | SWE-bench Full | 71% |
 | SWE-bench Extra | 68% |
-| 외부 레포지토리 | 53% |
+| 외부 레포지토리 | **53%** |
+
+<p class="small" style="margin: 0.3em 0 0.6em">Extra: 원본 SWE-bench의 추가 이슈 · 외부: RefactorBench 등 훈련 미포함 레포</p>
 
 <div class="highlight-box danger" style="margin-top: 0.8em; font-size: 0.85em">
 
@@ -1432,7 +1553,7 @@ PR 수정 전 코드 접두사에서<br>원본 코드 완성
 |------|-----------|
 | Claude 4 Opus | **31.6%** |
 | Claude 4 Sonnet | 21.4% |
-| GPT-4o | 17.4~18.4% |
+| GPT-4o (2개 버전) | 17.4~18.4% |
 | Claude 3.7 Sonnet | 12.3% |
 
 <div class="highlight-box danger" style="margin-top: 0.5em; font-size: 0.85em">
@@ -1475,7 +1596,7 @@ Claude 4 Opus의 31.6% 정확 일치: 코드 접두사를 보여주면 나머지
 ### 레포 편향 암기
 특정 레포의 구조와 패턴을 과적합
 
-<p class="small">증거: SWE-bench 레포 vs 외부 레포 최대 <strong>47%p</strong> 격차</p>
+<p class="small">증거: 같은 모델이 SWE-bench 내부 레포(76%)와<br>처음 보는 레포(최저 29%) 간 최대 <strong>47%p</strong> 차이</p>
 
 </div>
 
@@ -1517,71 +1638,90 @@ layout: section
 
 ---
 
-# SWE-rebench
-<br>
-<img src="./images/08-badertdinov2025-swe-rebench/fig1_pipeline.jpg" style="width: 50%; display: block; margin: 0.5em auto; border-radius: 8px" />
+# SWE-rebench: 개요
 
-- ~450,000개 PR → ~153,400개 후보 → **21,336개** 최종
-- LLM(Qwen2.5-72B)이 Docker 레시피 자동 생성
-- 품질 자동 평가: 이슈 명확도 79%, 복잡도 81% 정확도
+<p class="source">Badertdinov et al., NeurIPS 2025 Datasets & Benchmarks, arXiv:2505.20411</p>
 
-<p class="source">Badertdinov et al., NeurIPS 2025 Datasets & Benchmarks</p>
+<div class="grid grid-cols-2 gap-8" style="align-items:center">
+<div>
+
+<img src="./images/08-badertdinov2025-swe-rebench/fig1_pipeline.jpg" style="width: 100%; border-radius: 8px" />
+
+</div>
+<div>
+
+### 핵심 수치
+
+| 항목 | 수치 |
+|------|------|
+| 최종 인스턴스 | **21,336개** |
+| 레포 다양성 | **3,468개** (vs Verified 12개) |
+| 평가용 서브셋 | **294개** (169개 레포) |
+| 설치 성공률 | **31%** |
+
+### 핵심 전략
+
+오염된 정적 벤치마크의 한계를<br>**주기적 신규 태스크 추가**로 우회
+
+→ 모델 훈련 이후 등장한 새 이슈들로<br>지속 갱신 → 암기 불가
+
+</div>
+</div>
 
 <!--
 [섹션 7: SWE-rebench ~53분]
 
 오염 문제의 첫 번째 대응 전략: "계속 새로 만들자". 모델이 외운 문제를 주는 대신, 모델 훈련 이후에 발생한 새 이슈들로 계속 갱신합니다.
 
-450,000 PR에서 시작해 21,336개 — 규모 자체가 압도적입니다. 3,468개 다양한 레포 (Verified는 12개)로 다양성도 확보했습니다.
+450,000 PR에서 시작해 21,336개. 3,468개 다양한 레포 (Verified는 12개)로 다양성도 확보했습니다.
 
-핵심 혁신: LLM(Qwen2.5-72B)이 Docker 설치 레시피를 자동 생성합니다. 이것이 확장성의 비결이지만, 동시에 31% 설치 성공률이라는 한계의 원인이기도 합니다.
+평가용 벤치마크 서브셋은 294개 (169개 레포) — 전체 21,336개 중 엄선된 평가 전용 서브셋.
 -->
 
 ---
 
-# SWE-rebench: 핵심 발견
+# SWE-rebench: 4단계 자동화 파이프라인
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 점수 인플레이션 실증
-
-<div class="highlight-box danger">
-
-GPT-4.1이 **신규 태스크**(2025년 3~4월)에서<br>기존 SWE-bench Verified보다 성능 하락
-
-→ 높은 Verified 점수의 상당 부분이<br>**오염/과적합**에 기인할 가능성
-
-</div>
-
-<div class="highlight-box warning" style="margin-top: 0.8em">
-
-### 자동화-품질 트레이드오프
-- LLM이 자동 생성한 Docker 레시피<br>→ 설치 성공률 **31%** (매우 낮음)
-- 품질 자동 평가: 이슈 명확도 79%,<br>복잡도 81% (인간 대비)
-
+<div style="display:flex; flex-direction:column; gap:0.5em">
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#3b82f6; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">1</div>
+    <div><strong>예비 태스크 수집</strong><br><span class="small">30,000+ 레포 · Python 75%+ · 허용적 라이선스<br>450,000개 PR → 필터링 → <strong>153,400개</strong> 후보<br>조건: 이슈 연결 + 테스트 수정 + 1~15 파일 변경</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#6366f1; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">2</div>
+    <div><strong>설치 레시피 자동 생성</strong><br><span class="small">Qwen2.5-72B가 최대 3개 JSON 레시피 생성<br>오류 로그 피드백으로 반복 개선<br>레포 단위 성공률 <strong>31%</strong></span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#8b5cf6; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">3</div>
+    <div><strong>실행 기반 검증</strong><br><span class="small">분산 컨테이너에서 패치 전후 테스트 실행<br>fail-to-pass 필수 + pass-to-pass 유지<br>성공 시 의존성 버전 고정 → <strong>21,336개</strong></span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#a855f7; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">4</div>
+    <div><strong>품질 자동 평가</strong><br><span class="small">Qwen2.5-72B를 Verified 3,800개로 파인튜닝<br>3가지 이진 레이블 독립 예측 → 메타데이터 제공</span></div>
+  </div>
 </div>
 
 </div>
 <div>
 
-### 시사점
+### 품질 평가 3가지 기준
 
-<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em">
-  <div class="stat-card green">
-    <div class="stat-number" style="font-size: 1.4em">3,468</div>
-    <div class="stat-label">다양한 레포<br>(vs Verified 12개)</div>
-  </div>
-  <div class="stat-card red">
-    <div class="stat-number" style="font-size: 1.4em">31%</div>
-    <div class="stat-label">설치 성공률<br>자동화의 한계</div>
-  </div>
-</div>
+| 기준 | 정확도 | F1 |
+|------|:------:|:---:|
+| 이슈 명확도 | **79%** | 0.76 |
+| 태스크 복잡도 | **81%** | 0.82 |
+| 테스트 패치 적절성 | 67% | 0.65 |
 
-<div class="highlight-box info" style="margin-top: 0.5em; font-size: 0.85em">
+<p class="small" style="margin-top:0.3em">하드 필터 ✗ — 메타데이터로 제공, 사용자가 기준 직접 선택</p>
 
-대규모 자동화 ↑ → 개별 샘플 품질 ↓<br>
-이 트레이드오프가 주기적 갱신 전략의 핵심 과제
+<div class="highlight-box warning" style="margin-top:0.6em; font-size:0.88em">
+
+**레시피 추가해도 성능 수렴**<br>
+1개→6/18, 3개→8/18, 10개→9/18<br>
+자동화만으로는 품질 향상에 한계
 
 </div>
 
@@ -1589,11 +1729,64 @@ GPT-4.1이 **신규 태스크**(2025년 3~4월)에서<br>기존 SWE-bench Verifi
 </div>
 
 <!--
-점수 인플레이션 실증이 핵심입니다: GPT-4.1로 오래된 태스크(Verified)와 새 태스크(2025년 이후)를 비교 → 새 태스크에서 성능 하락. 같은 모델인데 왜? 오래된 태스크에 이미 노출되어 있기 때문입니다.
+4단계 파이프라인의 핵심 철학: 사람 개입 없이 자동으로 돌아가는 시스템.
 
-하지만 31% 설치 성공률은 심각한 한계입니다. 10개 레포 중 3개만 제대로 환경을 구축할 수 있다는 의미입니다. "자동화로 규모를 키우면 품질이 떨어진다"는 트레이드오프가 여기서 드러납니다.
+1단계: 30,000+ 레포에서 450,000개 PR. 필터 기준이 명확 — 이슈 연결, 테스트 수정, 1~15개 파일 변경. 너무 작거나 큰 PR 제외.
 
-전환: 그럼 다른 전략은 어떨까요? "새로 만드는" 대신 "아예 접근을 못하게 하는" 전략입니다.
+2단계: LLM이 Docker 레시피를 자동 생성. 오류 로그 보면서 스스로 개선. 하지만 31% 성공률.
+
+3단계: fail-to-pass가 반드시 있어야 합니다. 패치가 실제로 버그를 고쳤는지 실행으로 검증.
+
+4단계: 품질 점수는 하드 필터가 아닙니다 — 메타데이터로만 제공. 테스트 패치 적절성 67%가 가장 낮음.
+-->
+
+---
+
+# SWE-rebench: 오염 실증
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### GPT-4.1 시간대별 성능
+
+<div style="display:flex; flex-direction:column; gap:0.6em; margin-top:0.4em">
+  <div style="background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.4); border-radius:8px; padding:0.7em 1em">
+    <div style="font-size:0.8em; color:var(--color-text-muted)">2025년 1월 태스크 (구형)</div>
+    <div style="font-size:1.8em; font-weight:700; color:#818cf8">31.1%</div>
+  </div>
+  <div style="text-align:center; font-size:1.2em; color:#ef4444; padding:0.1em 0">↓ 4.4%p 하락</div>
+  <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); border-radius:8px; padding:0.7em 1em">
+    <div style="font-size:0.8em; color:var(--color-text-muted)">2025년 3~4월 태스크 (신규)</div>
+    <div style="font-size:1.8em; font-weight:700; color:#f87171">26.7%</div>
+  </div>
+</div>
+
+<p class="small" style="margin-top:0.5em">같은 모델 · 같은 방법 · 다른 시간대의 태스크<br>GPT-4.1이 <strong>유일하게</strong> 뚜렷한 하락을 보인 모델</p>
+
+</div>
+<div>
+
+<div class="highlight-box danger" style="margin-bottom:0.8em">
+
+훈련 데이터에 **이미 포함된** 오래된 태스크에서 성능이 높고, 훈련 이후 등장한 새 태스크에서 낮다<br>→ 오염이 점수를 부풀렸다는 직접 증거
+
+</div>
+
+### 전략 장단점
+
+✅ 다양성 — 3,468개 레포 · ✅ 확장성 — 21,000+<br>
+✅ 최신성 — 지속 갱신으로 암기 불가<br>
+❌ 설치 성공률 31% · ❌ Python 전용
+
+</div>
+</div>
+
+<!--
+핵심 증거: GPT-4.1이 1월 태스크(31.1%) vs 3~4월 태스크(26.7%) — 4.4%p 하락. "유일하게 뚜렷한 하락을 보인 모델"이라는 점이 중요합니다. 다른 모델들은 시간적 차이가 없었습니다.
+
+이 실험의 논리: 모델이 단순히 "더 잘하는" 것이라면 새 태스크에서도 비슷한 성능을 보여야 합니다. 구형 태스크에서만 잘한다 = 그 태스크들을 훈련 중에 본 적이 있다.
+
+전환: 그럼 다른 전략은? "새로 만드는" 대신 "아예 접근을 못하게 하는" 전략입니다. → SWE-bench Pro
 -->
 
 ---
@@ -1680,7 +1873,7 @@ Private 코드에서의 성능 하락이 모델의 "진짜 실력"에 더 가까
 |--|------------|----------|
 | 대표 | SWE-rebench | SWE-bench Pro |
 | 장점 | 대규모, 자동화, 최신 이슈 | 오염 근본 차단 |
-| 단점 | <span class="red">개별 샘플 품질 저하</span> | <span class="red">라이선스 일관성 문제</span> |
+| 단점 | <span class="red">개별 샘플 품질 저하</span> | <span class="red">라이선스로 인한 접근 제한</span> |
 | 한계 | 갱신 주기 내 오염 가능 (31% 설치 성공률) | 새 기술 패러다임 반영 어려움 |
 
 <p class="emphasis">두 전략 모두 완벽하지 않다 — 상호보완적 접근 필요</p>
@@ -1756,12 +1949,12 @@ layout: section
   <div class="key-message">
     <span class="msg-number">3</span>
     <p><strong>자동화와 품질</strong> 사이의 적정 지점을 찾는 것이 핵심 설계 과제다<br>
-    <span class="small">— 31% 설치 성공률(rebench) vs 비공개 코드 접근 제한(Pro)</span></p>
+    <span class="small">— 낮은 수율 (rebench) vs 비공개 코드 접근 제한(Pro)</span></p>
   </div>
   <div class="key-message">
     <span class="msg-number">4</span>
     <p><strong>에이전틱 코딩</strong> 시대에 맞는 새로운 평가 방식 설계가 시작되고 있다<br>
-    <span class="small">— 멀티파일 수정, 장기 태스크, 대화형 디버깅을 포함하는 방향으로</span></p>
+    <span class="small">— 멀티 에이저늩 코딩, 장기 태스크, 대화형 디버깅을 포함하는 방향으로</span></p>
   </div>
 </div>
 
@@ -1791,7 +1984,6 @@ layout: section
 - 어떤 벤치마크가 **SE 역량**을 가장 잘 반영할까?
 - **오염을 완전히 막는 것**은 가능한가?
 - **에이전틱 코딩** 시대의 평가는 어떻게 달라져야 하나?
-- 벤치마크 점수를 **어떻게 신뢰**할 수 있나?
 
 </div>
 <div>
