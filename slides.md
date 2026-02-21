@@ -1514,6 +1514,8 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 </div>
 <div>
 
+<div style="font-size:0.78em">
+
 **노출량이 많을수록 정확도 높음 →**
 
 | 데이터셋 | 노출 수준 | 정확도 |
@@ -1523,13 +1525,13 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 | SWE-bench Extra | 적음 | 68% |
 | 외부 레포지토리 | 미포함 | **53%** |
 
-<p class="small" style="margin: 0.3em 0 0.5em">Verified = 논문·블로그·리더보드에 가장 많이 유통<br>외부 레포 = 훈련 데이터에 포함된 적 없는 레포</p>
+</div>
 
-<div class="highlight-box danger" style="font-size: 0.85em">
+<div class="highlight-box danger" style="font-size: 0.82em; margin-top:0.4em; padding: 0.5em 0.8em">
 
 **추론이었다면**: 데이터셋이 달라도 정확도는 같아야 함<br>
-**실제**: 인터넷 노출량과 정확도가 **정확히 비례**<br>
-→ 노출 = 암기 = 성능, 이것이 오염의 증거
+**실제**: 노출량과 정확도가 **정확히 비례**<br>
+→ 노출 = 암기 = 성능 → 오염의 증거
 
 </div>
 
