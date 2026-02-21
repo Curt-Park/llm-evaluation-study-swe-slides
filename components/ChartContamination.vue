@@ -19,18 +19,12 @@ onMounted(() => {
   new Chart(canvas.value, {
     type: 'bar',
     data: {
-      labels: ['SWE-bench Verified', 'SWE-bench Full', '외부 레포지토리'],
+      labels: ['SWE-bench Verified', 'SWE-bench Full', 'SWE-bench Extra', '외부 레포지토리'],
       datasets: [
         {
-          label: '최고 정확도',
-          data: [76, 71, 68],
-          backgroundColor: '#e57373',
-          borderRadius: 4,
-        },
-        {
-          label: '최저 정확도',
-          data: [60, 57, 50],
-          backgroundColor: '#ffb74d',
+          label: '파일 경로 정확도 (최고값)',
+          data: [76, 71, 68, 53],
+          backgroundColor: ['#e57373', '#ef9a9a', '#ffb74d', '#81c784'],
           borderRadius: 4,
         }
       ]
@@ -40,7 +34,7 @@ onMounted(() => {
       maintainAspectRatio: false,
       scales: {
         y: {
-          min: 30, max: 85,
+          min: 30, max: 90,
           ticks: { color: '#e0e0e0', callback: v => v + '%' },
           grid: { color: 'rgba(255,255,255,0.1)' },
           title: { display: true, text: '파일 경로 식별 정확도 (%)', color: '#e0e0e0' }

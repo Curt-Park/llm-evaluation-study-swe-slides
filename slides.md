@@ -1405,29 +1405,22 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 
 # 세 가지 진단 실험
 
-<div class="grid grid-cols-3 gap-4" style="font-size: 0.8em">
+<p style="font-size:0.82em; margin-bottom:0.5em; color:var(--color-text-muted)">설계 원칙: <strong>추론으로는 맞출 수 없는 상황</strong>을 만들어, 모델이 맞히면 "기억"이 유일한 설명이 되도록</p>
+
+<div class="grid grid-cols-3 gap-4" style="font-size: 0.78em">
 <div>
 
 <div class="highlight-box warning">
 
-**실험 1**<br>파일 경로 맞추기
+**실험 1 — 파일 경로 맞추기**
 
-코드 없이 이슈 설명만으로<br>버그 파일 경로 예측
-
-순수 추론으로는 **불가능** → 암기가 유일한 설명
+이슈 설명만 제공, 코드 접근 ✗<br>버그 파일 경로 예측
 
 </div>
+<div class="highlight-box danger" style="margin-top:0.4em; font-size:0.95em">
 
-</div>
-<div>
-
-<div class="highlight-box warning">
-
-**실험 2**<br>함수 재현
-
-이슈 설명 + 해당 함수를 지운 파일로<br>삭제된 함수를 다시 구현하도록 요청
-
-원본과 연속 5단어가 얼마나 겹치는지 측정<br><span class="small">(5-gram 중복률: 텍스트 암기의 정량 지표)</span>
+**왜 증거인가?**<br>
+이슈 텍스트만으로는 "버그가 `db/sql/compiler.py`에 있다"는 것을 추론 불가 — 코드 구조를 봐야만 알 수 있음. 맞힌다면 **이미 알고 있었다는 뜻**
 
 </div>
 
@@ -1436,11 +1429,32 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 
 <div class="highlight-box warning">
 
-**실험 3**<br>접두사 완성
+**실험 2 — 함수 재현**
 
-버그 수정 전 코드의 앞부분만 보여주고<br>나머지 코드를 완성하도록 요청
+이슈 설명 + 함수를 지운 파일 제공<br>삭제된 함수 구현 요청<br>→ 5-gram 중복률 측정
 
-원본과 정확히 같은 문자열이<br>얼마나 나오는지 측정
+</div>
+<div class="highlight-box danger" style="margin-top:0.4em; font-size:0.95em">
+
+**왜 증거인가?**<br>
+같은 기능을 구현하는 코드는 무수히 많음. 원본과 **연속 5단어까지 일치**한다면 추론이 아니라 **텍스트를 그대로 기억**해서 출력
+
+</div>
+
+</div>
+<div>
+
+<div class="highlight-box warning">
+
+**실험 3 — 접두사 완성**
+
+수정 전 코드 앞부분만 제공<br>나머지 완성 요청<br>→ 정확 일치율 측정
+
+</div>
+<div class="highlight-box danger" style="margin-top:0.4em; font-size:0.95em">
+
+**왜 증거인가?**<br>
+버그 수정 방법은 여러 가지가 가능. 원본 패치와 **문자 단위로 정확히 일치**한다면 코드를 생성한 게 아니라 **재현**한 것
 
 </div>
 
@@ -1448,11 +1462,11 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 </div>
 
 <!--
-세 실험 모두 핵심 아이디어: 코드를 "추론"해서 맞출 수 없는 상황을 설계합니다.
+세 실험 모두 핵심 아이디어: "정답이 하나가 아닌 상황에서 원본과 정확히 같은 답이 나온다면 기억이다"
 
 실험 1이 가장 직관적입니다: 코드를 전혀 보여주지 않고 이슈 설명만으로 "어느 파일에 버그가 있냐"고 물어봅니다. 코드 구조를 모르면 이건 불가능합니다. 맞춘다면 이미 알고 있다는 뜻입니다.
 
-실험 2,3은 암기를 정량화합니다. 5단어가 연속으로 겹친다는 것은 텍스트를 그대로 기억하고 있다는 증거입니다.
+실험 2,3은 암기를 정량화합니다. 코드를 다양하게 구현할 수 있는데도 원본과 문자 수준으로 일치한다는 것이 핵심입니다.
 -->
 
 ---
@@ -1488,33 +1502,34 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 
 ---
 
-# 오염도 그래디언트: 파일 경로 정확도
+# 오염도 그래디언트: 인과 논증
 
 <div class="grid grid-cols-2 gap-6">
 <div>
 
-<p class="chart-note" style="margin-top: 0">파일 경로 식별 정확도 (%) — 데이터 소스별</p>
+<p class="chart-note" style="margin-top: 0">파일 경로 식별 정확도 (%) — 인터넷 노출량 순</p>
 
 <ChartContamination />
 
 </div>
 <div>
 
-오염도가 높을수록 → 파일 경로 정확도 높음
+**노출량이 많을수록 정확도 높음 →**
 
-| 데이터셋 | 정확도 |
-|---------|-------|
-| SWE-bench Verified | **76%** |
-| SWE-bench Full | 71% |
-| SWE-bench Extra | 68% |
-| 외부 레포지토리 | **53%** |
+| 데이터셋 | 노출 수준 | 정확도 |
+|---------|:--------:|:-----:|
+| SWE-bench Verified | 최다 유통 | **76%** |
+| SWE-bench Full | 많음 | 71% |
+| SWE-bench Extra | 적음 | 68% |
+| 외부 레포지토리 | 미포함 | **53%** |
 
-<p class="small" style="margin: 0.3em 0 0.6em">Extra: 원본 SWE-bench의 추가 이슈 · 외부: RefactorBench 등 훈련 미포함 레포</p>
+<p class="small" style="margin: 0.3em 0 0.5em">Verified = 논문·블로그·리더보드에 가장 많이 유통<br>외부 레포 = 훈련 데이터에 포함된 적 없는 레포</p>
 
-<div class="highlight-box danger" style="margin-top: 0.8em; font-size: 0.85em">
+<div class="highlight-box danger" style="font-size: 0.85em">
 
-깨끗한 그래디언트가 오염을 증명한다<br>
-순수 추론이라면 데이터셋마다<br>정확도가 달라질 이유가 없음
+**추론이었다면**: 데이터셋이 달라도 정확도는 같아야 함<br>
+**실제**: 인터넷 노출량과 정확도가 **정확히 비례**<br>
+→ 노출 = 암기 = 성능, 이것이 오염의 증거
 
 </div>
 
@@ -1522,9 +1537,15 @@ SWE-bench의 12개 레포 — Django, sympy, scikit-learn 등 — 는 GitHub에�
 </div>
 
 <!--
-이 그래디언트가 핵심 증거입니다: 만약 모델이 순수 추론으로 파일 경로를 맞춘다면, 데이터셋마다 정확도가 달라질 이유가 없습니다. 오염 정도에 따라 정확도가 체계적으로 달라진다는 것은 암기를 직접 증명합니다.
+이 그래디언트가 핵심 증거입니다.
 
-모델에게 코드를 전혀 보여주지 않고 이슈 설명만 줬는데 76% 정확도로 파일 경로를 맞춘다 — 이것은 "추론"이 아니라 "기억"입니다.
+논리 구조: 만약 모델이 순수 "추론"으로 파일 경로를 맞춘다면, 데이터셋이 달라도 정확도는 비슷해야 합니다. 어떤 이슈든 "이슈 설명 → 코드 구조 추론 → 파일 경로"의 동일한 추론 과정이니까요.
+
+그런데 실제로는 "인터넷에 얼마나 많이 유통됐는가"와 정확도가 정확히 비례합니다.
+- Verified: NeurIPS 논문, 기술 블로그, 리더보드에 가장 많이 등장 → 훈련 데이터에 가장 많이 포함
+- 외부 레포: 훈련 데이터에 포함된 적 없는 레포 → 기억할 수 없음
+
+결론: 정확도의 원천은 추론 능력이 아니라 훈련 중 노출량입니다.
 -->
 
 ---
@@ -1608,11 +1629,13 @@ Claude 4 Opus의 31.6% 정확 일치: 코드 접두사를 보여주면 나머지
 - 높은 SWE-bench 점수 ≠ 높은 범용 코딩 능력
 - 신규 모델일수록 더 많은 데이터에 노출<br>→ **점수 인플레이션**
 
-<div class="highlight-box danger" style="margin-top: 0.8em">
+<div class="highlight-box danger" style="margin-top: 0.6em; margin-bottom:0.5em">
 
 벤치마크의 가치는<br>**오염으로부터의 자유도**에 비례한다
 
 </div>
+
+<p class="small">⚠️ 논문의 한계 인정: 훈련 데이터 직접 접근 불가 — 행동 패턴에서의 추론이며, "뛰어난 일반화"일 가능성을 완전 배제할 수 없음. 그러나 복수 실험·복수 모델의 일관된 그래디언트는 오염 가설을 강하게 지지</p>
 
 </div>
 </div>
@@ -1972,9 +1995,8 @@ Public vs Commercial 격차: GPT-5가 Public 41.8% → Commercial 15.7% (−26.1
 | | 주기적 갱신 | 접근 제한 |
 |--|------------|----------|
 | 대표 | SWE-rebench | SWE-bench Pro |
-| 장점 | 대규모, 자동화, 최신 이슈 | 오염 근본 차단 |
-| 단점 | <span class="red">개별 샘플 품질 저하</span> | <span class="red">라이선스로 인한 접근 제한</span> |
-| 한계 | 갱신 주기 내 오염 가능 (31% 설치 성공률) | 새 기술 패러다임 반영 어려움 |
+| 장점 | 대규모, 자동화, 최신 이슈 | 오염 근본 차단 -> 품질 제어 용이 |
+| 단점 | <span class="red">개별 샘플 품질 저하</span> | <span class="red">새 기술 트랜드 반영 어려움</span> |
 
 <p class="emphasis">두 전략 모두 완벽하지 않다 — 상호보완적 접근 필요</p>
 
