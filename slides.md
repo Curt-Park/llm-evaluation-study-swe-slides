@@ -1079,20 +1079,37 @@ Verified에서는 상위 모델이 80%를 돌파. 이 숫자를 어떻게 봐야
 ---
 
 # 여전한 SWE-bench의 한계
-<br>
+
+<div class="grid grid-cols-3 gap-6" style="margin-top:0.5em">
 <div class="highlight-box warning">
 
 ### Python Only
 12개 레포 모두 Python<br>
-실제 소프트웨어 세계는 다양한 언어로 구성
+실제 개발 환경은 Java, Go,<br>Rust, TypeScript 등 다언어
 
 </div>
 
 <div class="highlight-box warning">
 
 ### 정적 스냅샷
-한번 수집 후 업데이트 없음 → 오염 누적<br>
-모든 주요 LLM의 훈련 데이터 컷오프 이전 이슈들
+한번 수집 후 업데이트 없음<br>
+모든 주요 LLM의 훈련 데이터<br>컷오프 이전 이슈 → 오염 누적
+
+</div>
+
+<div class="highlight-box warning">
+
+### 리더보드 경쟁
+점수 경쟁이 과적합을 유발<br>
+모델 훈련 시 Verified 태스크<br>노출 → 성능 인플레이션
+
+</div>
+</div>
+
+<div class="highlight-box danger" style="margin-top:0.8em; font-size:0.9em">
+
+→ 이 세 한계가 다음 두 질문을 낳는다:<br>
+**"다른 언어에서도 통하는가?"** (Multi-SWE-bench) · **"점수가 진짜인가?"** (The SWE-Bench Illusion)
 
 </div>
 
@@ -1321,6 +1338,7 @@ MopenHands: Python **52.2%** → Java **21.9%** → JS **5.1%**
 <div class="highlight-box warning" style="font-size:0.88em; margin-bottom:0.6em">
 
 **Easy → Hard 붕괴**<br>
+<span class="small">Easy = 단일 파일 · 짧은 패치 / Hard = 멀티파일 · 600 토큰+</span><br>
 Python Easy: **71.7%** → Hard: **11.1%**<br>
 타 언어 Hard: 대부분 **0% 근접**
 
@@ -2078,7 +2096,7 @@ layout: section
   <div class="key-message">
     <span class="msg-number">4</span>
     <p><strong>에이전틱 코딩</strong> 시대에 맞는 새로운 평가 방식 설계가 시작되고 있다<br>
-    <span class="small">— 멀티 에이저늩 코딩, 장기 태스크, 대화형 디버깅을 포함하는 방향으로</span></p>
+    <span class="small">— 멀티 에이전트 코딩, 장기 태스크, 대화형 디버깅을 포함하는 방향으로</span></p>
   </div>
 </div>
 
