@@ -1799,44 +1799,51 @@ layout: section
 
 ---
 
-# SWE-bench Pro
+# SWE-bench Pro: 데이터셋 구조
+
+<p class="source">Deng et al., Scale AI — arXiv:2509.16941</p>
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 3단계 데이터셋 구조
+### 3단계 오염 방어 설계
 
-<div class="highlight-box info">
+<div class="highlight-box info" style="margin-bottom:0.5em">
 
-**Public (731개)**<br>GPL Copyleft 라이선스 레포<br>→ 법적 위험으로 학습 억제
-
-</div>
-<div class="highlight-box warning" style="margin-top: 0.5em">
-
-**Held-out (858개)**<br>비공개 유지 → 미래 과적합 탐지용
+**Public (731개)** — GPL Copyleft 라이선스<br>
+<span class="small">폐쇄형 모델이 GPL 코드를 학습하면 서비스 전체가 GPL 적용<br>→ 법적 위험으로 학습 불가 → 자연스러운 오염 방어막</span>
 
 </div>
-<div class="highlight-box danger" style="margin-top: 0.5em">
+<div class="highlight-box warning" style="margin-bottom:0.5em">
 
-**Commercial (276개)**<br>18개 스타트업 비공개 코드<br>→ 학습 데이터에 포함 **불가능**
+**Held-out (858개)** — 완전 비공개<br>
+<span class="small">결과만 공개, 데이터 미공개 → 미래 과적합 탐지용</span>
+
+</div>
+<div class="highlight-box danger">
+
+**Commercial (276개)** — 18개 스타트업 미공개 코드<br>
+<span class="small">세상에 공개된 적 없음 → 훈련 데이터 포함 원천 불가</span>
 
 </div>
 
 </div>
 <div>
-<br><br>
-<img src="./images/10-deng2025-swe-bench-pro/fig1_patch_complexity_overview.jpg" style="width: 100%; border-radius: 8px" />
 
-<div style="font-size: 0.75em; margin-top: 0.3em">
+<img src="./images/10-deng2025-swe-bench-pro/fig1_patch_complexity_overview.jpg" style="width: 100%; border-radius: 8px; margin-bottom:0.5em" />
 
-- 평균 패치: **107.4줄 / 4.1개 파일**  ·  최소 10줄 의무화
+### Long-Horizon 복잡도
+
+| 항목 | SWE-bench Pro | Verified |
+|------|:------------:|:--------:|
+| 평균 패치 줄수 | **107.4줄** | 32.8줄 |
+| 평균 수정 파일 수 | **4.1개** | 1.7개 |
+| 복잡도 배율 | **~3배** | — |
+
+<p class="small">최소 10줄 의무화 · 일부 태스크는 전문가가 수일 소요</p>
 
 </div>
-
 </div>
-</div>
-
-<p class="source">Deng et al., Scale AI, arXiv 2025</p>
 
 <!--
 [섹션 8: SWE-bench Pro ~57분]
@@ -1847,22 +1854,115 @@ GPL 라이선스 활용은 영리한 아이디어입니다. 폐쇄형 모델(GPT
 
 Commercial Set은 더 강력합니다: 18개 스타트업의 미공개 코드 276개 — 세상에 공개된 적이 없으므로 훈련 데이터에 절대 들어갈 수 없습니다.
 
-평균 107.4줄/4.1파일: Verified(32.8줄/1.7파일)의 3배 복잡도입니다. "단순 버그 픽스"가 아닌 실질적인 엔지니어링 작업입니다.
+평균 107.4줄/4.1파일: Verified(32.8줄/1.7파일)의 3배 복잡도. "단순 버그 픽스"가 아닌 시니어 엔지니어가 수일 걸릴 작업입니다. 레포당 50~100개로 상한을 두어 단일 레포 과적합도 방지합니다.
 -->
-
 
 ---
 
-# Public vs Private: 현실 격차
+# SWE-bench Pro: 인간 보강
 
-<p class="chart-note">SWE-bench Pro 해결률 (%) — Public vs Private</p>
+<div class="grid grid-cols-2 gap-8">
+<div>
 
-<ChartSWEPro />
+### 태스크 3단계 보강
+
+자동 수집된 이슈의 **8.4~25.9%는 맥락 누락** → 인간이 직접 보강
+
+<div style="display:flex; flex-direction:column; gap:0.45em; margin-top:0.6em">
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#3b82f6; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">1</div>
+    <div><strong>Problem Statement 재작성</strong><br><span class="small">커밋/PR에서 추출한 설명의 모호함 제거<br>→ 이슈만 보고도 무엇을 고쳐야 할지 명확하게</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#6366f1; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">2</div>
+    <div><strong>Requirements 명세</strong><br><span class="small">유닛 테스트 기반 동작 목록을 인간이 직접 작성<br>→ 테스트가 정말 이슈를 검증하는지 보장</span></div>
+  </div>
+  <div style="display:flex; align-items:flex-start; gap:0.6em">
+    <div style="background:#8b5cf6; color:white; border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; flex-shrink:0">3</div>
+    <div><strong>Interface Specification</strong><br><span class="small">신기능 추가 시 예상 클래스/함수 시그니처 명시<br>→ 에이전트가 구현 방향을 잡을 수 있게</span></div>
+  </div>
+</div>
+
+</div>
+<div>
+
+### 보강의 효과 — Ablation
+
+보강 **제거** 시 성능 변화:
+
+| 모델 | 보강 있음 | 보강 없음 | 하락 |
+|------|:--------:|:--------:|:----:|
+| GPT-5 | 25.9% | 8.4% | **−17.5%p** |
+| Claude Opus 4.1 | 22.7% | 8.2% | **−14.5%p** |
+
+<div class="highlight-box danger" style="margin-top:0.7em; font-size:0.9em">
+
+인간 보강 없이는 성능이 **⅓ 수준**으로 붕괴<br>
+→ 이슈 설명의 품질이 에이전트 성능의 핵심 변수
+
+</div>
+
+</div>
+</div>
 
 <!--
-Private 코드에서의 성능 하락이 모델의 "진짜 실력"에 더 가까울 수 있습니다. GPT-5의 경우 23.1% → 14.9%로 8.2%p 하락.
+인간 보강이 왜 중요한가: GitHub 이슈는 원래 사람이 사람에게 쓴 글입니다. 전후 맥락, 암묵적 가정, "뭔가 이상한데"라는 감각이 녹아 있습니다. 에이전트에게 그대로 주면 맥락이 부족합니다.
 
-실패 분석 보충: 컨텍스트 오버플로우가 공통 병목 (Claude Sonnet 4에서 35.6%). 긴 코드베이스를 다 읽으려다 컨텍스트 창이 가득 차는 경우. 무한 파일 읽기(17%)도 중요 — 어디를 고쳐야 할지 몰라서 계속 파일을 탐색하다 종료. 이는 앞서 SWE-bench에서 봤던 "결함 위치 찾기 능력"의 한계와 일맥상통합니다.
+Ablation이 핵심 증거입니다: GPT-5가 보강 없이 25.9% → 8.4%, 무려 3배 이상 차이. "어떻게 고쳐야 하는지"를 더 명확히 알려줬을 때 에이전트가 훨씬 잘 합니다.
+
+이것은 평가 기준의 문제이기도 합니다: "AI가 이걸 못 한다"는 말을 하기 전에 "이슈 설명이 충분히 명확했나?"를 먼저 확인해야 한다는 교훈입니다.
+-->
+
+---
+
+# SWE-bench Pro: 성능과 실패 분석
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+### 모델별 해결률
+
+| 모델 | Public | Commercial |
+|------|:------:|:----------:|
+| Claude Sonnet 4.5 | **43.6%** | — |
+| GPT-5 (high) | **41.8%** | **15.7%** |
+| Claude Opus 4.1 | — | **17.8%** |
+| Gemini 2.5 Pro | — | 10.1% |
+| GPT-4o | — | 3.6% |
+
+<p class="small" style="margin-top:0.4em">GPT-5: Public 41.8% → Commercial 15.7% (<strong>−26.1%p</strong>)<br>에이전트 설정: SWE-Agent · 최대 50턴 · $2 예산</p>
+
+</div>
+<div>
+
+### 실패 원인 분석 (LLM-as-Judge)
+
+| 실패 원인 | Claude Opus 4.1 | Claude Sonnet 4 | GPT-5 |
+|----------|:--------------:|:--------------:|:-----:|
+| 잘못된 솔루션 | **50.3%** | — | 39.5% |
+| 문법 오류 | 31.3% | — | — |
+| 컨텍스트 오버플로우 | — | **62.6%** | — |
+| 무한 파일 읽기 | — | 57.4% | — |
+| 도구 사용 실패 | — | — | 17.7% |
+
+<div class="highlight-box warning" style="margin-top:0.6em; font-size:0.88em">
+
+모델마다 **병목이 다르다**<br>Opus: 이해력 · Sonnet: 컨텍스트 관리 · GPT-5: 도구 활용
+
+</div>
+
+</div>
+</div>
+
+<!--
+Public vs Commercial 격차: GPT-5가 Public 41.8% → Commercial 15.7% (−26.1%p). Public은 GPL이지만 코드 구조가 인터넷에 공개되어 있어 간접적 오염 가능. Commercial은 완전히 새로운 코드 → 진짜 실력.
+
+실패 분석: 모델마다 다른 병목이 흥미롭습니다.
+- Claude Opus 4.1: 50.3%가 잘못된 솔루션 — 문제는 이해했지만 구현이 틀림
+- Claude Sonnet 4: 62.6%가 컨텍스트 오버플로우, 57.4%가 무한 파일 읽기 — 긴 코드베이스 탐색 능력의 한계
+- GPT-5: 도구 사용 실패 17.7% — 에이전트 환경에서의 도구 활용 차이
+
+이 분석은 "어떤 능력을 먼저 개선해야 하는가"에 대한 방향을 제시합니다.
 -->
 
 ---
