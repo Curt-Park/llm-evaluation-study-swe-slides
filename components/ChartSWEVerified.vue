@@ -19,11 +19,25 @@ onMounted(() => {
   new Chart(canvas.value, {
     type: 'bar',
     data: {
-      labels: ['Claude Opus 4.5', 'Claude Opus 4.6', 'MiniMax M2.5', 'GPT-5.2', 'GLM-5', 'Claude Sonnet 4.5', 'Gemini 3 Pro'],
+      labels: [
+        'OpenHands + Kimi K2',
+        'mini-SWE + Kimi K2 Thinking',
+        'mini-SWE + Minimax M2',
+        'EntroPO + Qwen3-Coder-30B',
+        'mini-SWE + DeepSeek V3.2',
+        'mini-SWE + Devstral small',
+        'mini-SWE + Qwen3-Coder 480B',
+        'mini-SWE + GLM-4.6',
+        'mini-SWE + GLM-4.5',
+        'mini-SWE + Devstral',
+      ],
       datasets: [{
         label: '해결률 (%)',
-        data: [80.9, 80.8, 80.2, 80.0, 77.8, 77.2, 76.2],
-        backgroundColor: ['#4fc3f7', '#4fc3f7', '#81c784', '#ffb74d', '#ba68c8', '#4fc3f7', '#e57373'],
+        data: [65.40, 63.40, 61.00, 60.40, 60.00, 56.40, 55.40, 55.40, 54.20, 53.80],
+        backgroundColor: [
+          '#4fc3f7', '#4fc3f7', '#81c784', '#ba68c8', '#ffb74d',
+          '#e57373', '#4dd0e1', '#fff176', '#a5d6a7', '#ef9a9a',
+        ],
         borderRadius: 4,
       }]
     },
@@ -33,12 +47,12 @@ onMounted(() => {
       maintainAspectRatio: false,
       scales: {
         x: {
-          min: 60, max: 85,
+          min: 45, max: 70,
           ticks: { color: '#e0e0e0', callback: v => v + '%' },
           grid: { color: 'rgba(255,255,255,0.1)' },
         },
         y: {
-          ticks: { color: '#e0e0e0', font: { size: 13 } },
+          ticks: { color: '#e0e0e0', font: { size: 11 } },
           grid: { display: false }
         }
       },

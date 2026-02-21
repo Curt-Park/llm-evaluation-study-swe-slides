@@ -824,7 +824,7 @@ layout: section
 <div class="grid grid-cols-3 gap-4" style="font-size: 0.85em">
 <div>
 
-<div class="highlight-box danger">
+<div class="highlight-box danger" style="min-height: 13em">
 
 ### Overly Specific Tests
 테스트가 너무 구체적이거나<br>이슈와 무관한 내용을 검사
@@ -838,7 +838,7 @@ layout: section
 </div>
 <div>
 
-<div class="highlight-box danger">
+<div class="highlight-box danger" style="min-height: 13em">
 
 ### Underspecified Issues
 이슈 설명이 모호해서<br>무엇을 해결해야 하는지 불명확
@@ -852,14 +852,14 @@ layout: section
 </div>
 <div>
 
-<div class="highlight-box danger">
+<div class="highlight-box danger" style="min-height: 13em">
 
 ### Environment Setup
 환경 설정 문제로<br>올바른 솔루션도 실패
 
 <hr>
 
-<p class="small">예: Deprecated API, 암묵적 의존성 버전 가정</p>
+<p class="small">예: 테스트가 특정 패키지 버전에서만 통과하도록 작성되어 있는데, 평가 환경에 다른 버전이 설치되면 올바른 코드도 실패</p>
 
 </div>
 
@@ -868,7 +868,9 @@ layout: section
 
 <div class="highlight-box warning" style="margin-top: 0.8em">
 
-**68.3% 필터링** → 원본 SWE-bench 점수가 실제 능력보다 **낮게** 측정되었을 가능성
+원본 2,294개 중 **68.3%가 위 문제 중 하나를 가짐**<br>
+→ 올바른 코드를 작성해도 테스트를 통과 못하는 케이스가 다수 존재<br>
+→ 모델이 실제로 이슈를 해결했음에도 "미해결"로 집계 → 해결률이 실제 능력보다 **낮게** 측정
 
 </div>
 
@@ -882,25 +884,93 @@ OpenAI Preparedness Team이 원본 SWE-bench를 직접 검토하면서 발견한
 
 ---
 
-# SWE-bench Verified 어노테이션
+# SWE-bench Verified: 검증 방법론
+
+<div class="stat-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1em; margin-bottom: 1.2em">
+  <div class="stat-card">
+    <div class="stat-number">93명</div>
+    <div class="stat-label">전문 Python 개발자<br><span style="font-size:0.8em">(Upwork 모집)</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">1,699개</div>
+    <div class="stat-label">수동 평가 샘플</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">×3</div>
+    <div class="stat-label">인스턴스당<br>독립 평가 횟수</div>
+  </div>
+</div>
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 전문가 검증 프로세스
-- Upwork 모집 **93**명 전문 Python 개발자
-- **1,699**개 샘플 수동 평가
-- **3중 교차 검증**으로 신뢰도 확보
-- 0~3점 심각도 스케일로 평가
+### 심각도 스케일 (0~3점)
 
-### 평가 기준
-- **이슈 명확도**: 이슈만 보고 해결책을 특정할 수 있는가?
-- **테스트 공정성**: 올바른 솔루션이 테스트를 통과하는가?
+| 점수 | 의미 | 처리 |
+|------|------|------|
+| 0~1점 | 경미한 문제 | ✅ 유지 |
+| **2~3점** | **심각한 문제** | ❌ **제거** |
+
+<p class="small" style="margin-top: 0.6em">보수적 앙상블: 3명 중 <strong>가장 높은</strong> 점수 채택<br>→ 단 1명이라도 2점 이상이면 제거</p>
 
 </div>
 <div>
 
-### 필터링 결과
+### 2가지 평가 기준
+
+<div class="highlight-box info" style="margin-bottom: 0.6em">
+
+**① 이슈 명확도**<br>이슈 설명만으로 해결책을 특정할 수 있는가?
+
+</div>
+<div class="highlight-box info">
+
+**② 테스트 공정성**<br>FAIL_TO_PASS 테스트가 올바른 솔루션을 거부하는가?
+
+</div>
+<p class="small" style="margin-top: 0.5em">+ 난이도 추정(Easy/Medium/Hard) · 기타 문제 자유 기재</p>
+
+</div>
+</div>
+
+<!--
+93명 어노테이터가 1,699개를 평가해서 500개 선정. Upwork에서 모집한 전문 Python 개발자들입니다.
+
+**보수적 앙상블**: 다수결이 아니라 "3명 중 가장 높은 점수"를 채택합니다. 왜 보수적으로 설계했냐고요? 품질 문제를 놓치는 것(false negative)이 훈련 데이터 오염보다 훨씬 나쁘기 때문입니다.
+
+**2가지 평가 기준**:
+- 이슈 명확도: "이 이슈 설명만 보고 어떤 코드를 수정해야 하는지 알 수 있는가?" → 모호하면 제거
+- 테스트 공정성: "이 테스트가 실제로 이슈를 해결했는지 공정하게 측정하는가?" → 편협하거나 관련 없으면 제거
+-->
+
+---
+
+# SWE-bench Verified: 필터링 결과
+
+<div class="grid grid-cols-2 gap-10" style="align-items: center">
+<div>
+
+<div style="display:flex; flex-direction:column; gap:0.5em; padding: 0.5em 0">
+  <div style="font-size:0.8em; color:var(--color-text-muted); margin-bottom:0.2em">원본 SWE-bench (2,294개)</div>
+  <div style="display:flex; height:2.8em; border-radius:6px; overflow:hidden; width:100%">
+    <div style="background:#ef4444; width:68.3%; display:flex; align-items:center; justify-content:center; font-size:0.8em; font-weight:600; color:white">제거 68.3%</div>
+    <div style="background:#22c55e; flex:1; display:flex; align-items:center; justify-content:center; font-size:0.8em; font-weight:600; color:white">유지 31.7%</div>
+  </div>
+  <div style="display:flex; justify-content:flex-end; font-size:0.8em; color:var(--color-text-muted)">→ 500개 선정</div>
+  <div style="margin-top:0.8em; display:flex; flex-direction:column; gap:0.4em">
+    <div>
+      <div style="font-size:0.75em; color:var(--color-text-muted); margin-bottom:0.2em">불명확한 이슈 설명 (38.3%)</div>
+      <div style="height:1.2em; background:#fca5a5; border-radius:4px; width:38.3%"></div>
+    </div>
+    <div>
+      <div style="font-size:0.75em; color:var(--color-text-muted); margin-bottom:0.2em">부당한 테스트 케이스 (61.1%)</div>
+      <div style="height:1.2em; background:#f87171; border-radius:4px; width:61.1%"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div>
 
 | 문제 유형 | 비율 |
 |----------|------|
@@ -909,9 +979,11 @@ OpenAI Preparedness Team이 원본 SWE-bench를 직접 검토하면서 발견한
 | 전체 제거 비율 | **68.3%** |
 | **최종 선정** | **500개** |
 
-<div class="highlight-box info" style="margin-top: 0.5em; font-size: 0.85em">
+<p class="small" style="margin-top: 0.6em">38.3% + 61.1% ≠ 68.3%<br>두 문제를 <strong>동시에</strong> 가진 인스턴스(≈31%)가<br>중복 집계되기 때문</p>
 
-난이도: Easy(≤15분) 196개 / Hard(≥1시간) 45개
+<div class="highlight-box warning" style="margin-top: 0.8em; font-size: 0.9em">
+
+원본 2,294개 중 **68.3%** 제거<br>→ 최종 **500개**만 Verified 인증
 
 </div>
 
@@ -919,61 +991,71 @@ OpenAI Preparedness Team이 원본 SWE-bench를 직접 검토하면서 발견한
 </div>
 
 <!--
-93명 어노테이터가 1,699개를 평가해서 500개 선정. Upwork에서 모집한 전문 Python 개발자들로, 3중 교차 검증으로 신뢰도를 확보했습니다.
+500개라는 숫자: 작아 보이지만, 고품질 500개가 저품질 2,294개보다 훨씬 유용합니다.
 
-500개라는 숫자: 작아 보이지만, 고품질 500개가 저품질 2,294개보다 훨씬 유용합니다. Easy(≤15분) 196개, Hard(≥1시간) 45개 — 난이도 분포도 다양합니다.
+68.3% 필터링의 의미: 원본 SWE-bench로 측정한 모델 성능은 실제보다 낮게 측정되어 있었습니다. GPT-4o가 원본에서 16%였는데 Verified에서 33.2%로 두 배가 됩니다 — 벤치마크 품질이 얼마나 중요한지를 보여주는 수치입니다.
+
+Easy(≤15분) 196개, Hard(≥1시간) 45개 — 난이도 분포도 다양합니다.
 -->
 
 ---
 
 # SWE-bench Verified: Docker 평가 인프라
 
-<br>
-
-<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em">
-  <div class="stat-card">
-    <div class="stat-number" style="font-size: 1.5em">500</div>
-    <div class="stat-label">최종 인스턴스</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" style="font-size: 1.5em">93</div>
-    <div class="stat-label">어노테이터</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" style="font-size: 1.5em">33.2%</div>
-    <div class="stat-label">공개 당시<br>최고 성능(GPT-4o)</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" style="font-size: 1.5em">80%+</div>
-    <div class="stat-label">1년 반 후<br>최고 성능</div>
-  </div>
-</div>
-
-<br>
-
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 재현 가능한 평가 환경
-- SWE-bench 원저자와 협력하여<br>**컨테이너화된 Docker 환경** 구축
-- 기존 평가의 **재현성 문제 해결**
-- 각 인스턴스별 **독립 환경**으로 의존성 충돌 방지
+### 왜 Docker가 필요했나?
+
+<div class="highlight-box warning" style="font-size: 0.88em; margin-bottom: 0.8em">
+
+**Before**: 팀마다 서로 다른 환경 → 결과 비교 불가<br>
+"우리 모델 23% 달성" — 같은 기준으로 측정한 건가?
 
 </div>
 
+<div class="highlight-box info" style="font-size: 0.88em">
+
+**After**: 모든 제출이 동일한 컨테이너에서 실행<br>→ 공정하고 재현 가능한 비교
+
+</div>
+
+### 평가 과정
+1. 컨테이너 마운트 (PR 직전 상태)
+2. 에이전트 패치를 git diff로 적용
+3. 지정된 테스트 스위트 전체 실행
+
+</div>
 <div>
 
-### 표준화된 평가
-- 모든 모델이 동일한 환경에서 평가
-- 평가 결과의 공정성 및 일관성 보장
-- 커뮤니티 표준 벤치마크로 자리잡음
+### 3-Layer 이미지 아키텍처
+
+<div style="display:flex; flex-direction:column; gap:0.5em; margin-top:0.2em">
+  <div style="background:var(--color-accent-3, #3b82f6); opacity:0.9; border-radius:6px; padding:0.5em 0.8em; font-size:0.85em; font-weight:600">
+    🏗️ Base Image<br><span style="font-weight:400; font-size:0.9em">모든 평가 공통 의존성</span>
+  </div>
+  <div style="background:var(--color-accent-3, #3b82f6); opacity:0.75; border-radius:6px; padding:0.5em 0.8em; font-size:0.85em; font-weight:600; margin-left:1.2em">
+    🐍 Environment Images (~60개)<br><span style="font-weight:400; font-size:0.9em">레포별 Python 환경</span>
+  </div>
+  <div style="background:var(--color-accent-3, #3b82f6); opacity:0.6; border-radius:6px; padding:0.5em 0.8em; font-size:0.85em; font-weight:600; margin-left:2.4em">
+    📦 Instance Images (500개)<br><span style="font-weight:400; font-size:0.9em">인스턴스별 정확한 코드 상태</span>
+  </div>
+</div>
+
+<p class="small" style="margin-top: 0.8em">
+전체 500개 이미지 = 약 <strong>30 GiB</strong><br>
+레이어 공유로 원본(~2,000 GB) 대비 대폭 압축
+</p>
 
 </div>
 </div>
-
 
 <!--
-Docker 환경 표준화는 단순한 기술적 개선이 아닙니다. 이전에는 각 팀이 서로 다른 환경에서 평가했기 때문에 결과를 비교하기 어려웠습니다. "우리 모델은 23% 달성했는데 다른 팀도 같은 기준?" — Docker 표준화 이후 이 문제가 해결됐습니다.
+Docker 환경 표준화는 단순한 기술적 개선이 아닙니다. 이전에는 각 팀이 서로 다른 환경에서 평가했기 때문에 결과를 비교하기 어려웠습니다. Docker 표준화 이후 "같은 기준으로 비교한다"는 신뢰가 생겼습니다.
+
+3-Layer 구조가 왜 효율적인가: Base → Env → Instance 순서로 레이어를 쌓으면, 공통 부분은 한 번만 저장하고 재사용합니다. 덕분에 500개 인스턴스 전체가 30 GiB에 불과합니다.
+
+평가 과정: 에이전트가 생성한 코드 변경(git diff)을 컨테이너에 적용한 뒤, PR 당시 지정된 테스트를 그대로 실행합니다. fail-to-pass(새 테스트 통과) + pass-to-pass(기존 테스트 유지) 모두 확인합니다.
 
 2024년 8월 공개 당시 GPT-4o 33.2% → 1년 반 후 80%+ — 이 속도가 진짜 능력 향상인지, 오염인지가 다음 섹션의 핵심 질문입니다.
 -->
@@ -982,7 +1064,7 @@ Docker 환경 표준화는 단순한 기술적 개선이 아닙니다. 이전에
 
 # SWE-bench Verified 리더보드
 
-<p class="chart-note">해결률 (%) — 2026년 2월 기준</p>
+<p class="chart-note">해결률 (%) — swe-bench.com 리더보드 Top 10 (2025년 12월 기준)</p>
 
 <ChartSWEVerified />
 
@@ -996,7 +1078,7 @@ Verified에서는 상위 모델이 80%를 돌파. 이 숫자를 어떻게 봐야
 
 ---
 
-# SWE-bench의 한계
+# 여전한 SWE-bench의 한계
 <br>
 <div class="highlight-box warning">
 
