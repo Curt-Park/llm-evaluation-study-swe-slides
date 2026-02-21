@@ -14,7 +14,7 @@ drawings:
 ---
 
 # 소프트웨어 엔지니어링과 LLM 평가
-## 코딩 벤치마크의 변천사, 그리고 남겨진 과제
+## 코딩 벤치마크의 변천사
 
 <p class="title-meta">Curt Park</p>
 
@@ -32,7 +32,7 @@ drawings:
 
 <ol class="agenda-list">
 <br>
-  <li>소프트웨어 엔지니어링과 코딩 벤치마크</li>
+  <li>LLM & 소프트웨어 엔지니어링</li>
   <li>HumanEval: LLM 코딩 벤치마크의 조상님</li>
   <li>SWE-bench: 실전 난이도의 문제</li>
   <li>SWE-bench-Verified: 더 나은 품질</li>
@@ -80,10 +80,16 @@ drawings:
 -->
 
 ---
+layout: section
+---
+
+# LLM & 소프트웨어 엔지니어링
+
+---
 
 # 최신 모델 발표와 벤치마크
 
-<p class="chart-note">최신 모델의 성능비교에 반드시 등장하는 벤치마크</p>
+<p class="chart-note">최신 모델의 코딩 성능비교에 반드시 등장하는 SWE 계열의 벤치마크</p>
 
 <div class="grid grid-cols-2 gap-6">
 <div>
@@ -122,10 +128,9 @@ drawings:
 ### 대표적인 Agentic Coding 벤치마크들...
 - **SWE**-bench
 - **SWE**-bench Verified
-- **SWE**-bench Pro
-- **SWE**-bench Live
-- **SWE**-rebench
 - Multi-**SWE**-bench
+- **SWE**-bench Pro
+- **SWE**-rebench
 
 </div>
 <div>
@@ -155,6 +160,8 @@ drawings:
 # 소프트웨어 엔지니어링이란?
 
 <br>
+
+<p class="chart-note">와 많다!</p>
 
 <div class="grid grid-cols-2 gap-6">
 <div>
@@ -225,7 +232,7 @@ Hu et al. 2025년 논문 기준 SE 벤치마크 291개 조사 결과입니다. �
 
 <br>
 
-| SE 영역 | 정답 판별 방법 | 자동화 |
+| SWE 영역 | 정답 판별 방법 | 자동화 |
 |---------|-------------|--------|
 | 코딩 | 테스트 실행 | ✅ 쉬움 |
 | 테스팅 | 커버리지/버그 탐지 | ⚠️ 부분 |
@@ -254,7 +261,23 @@ Hu et al. 2025년 논문 기준 SE 벤치마크 291개 조사 결과입니다. �
 layout: center
 ---
 
-# 오늘은 코딩 벤치마크에 집중합니다
+<div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em">
+
+# 즉, 상대적으로 평가가 용이한 특정 주제로
+# 쏠림 현상이 발생하는 것
+
+</div>
+
+---
+layout: center
+---
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em">
+
+# 오늘 소개해드릴 내용은,
+# 소프트웨어 엔지니어링의 극히 일부분 영역!
+
+</div>
 
 <!--
 [~5분 경과, 섹션 1 마무리]
@@ -280,7 +303,7 @@ layout: section
 ### 기존 평가의 문제
 - 코드 평가에 **BLEU 점수** 사용
 - **BLEU** (Bilingual Evaluation Understudy):<br>n-gram 중복 기반 텍스트 유사도 메트릭.<br>기계번역 평가용으로 설계됨.
-- 실제로 실행되는지는 무관
+- 실제로 동일한 기능이 실행되는지를 확인하기는 어려움
 
 </div>
 <div>
@@ -335,8 +358,6 @@ def has_close_elements(
     """
 ```
 
-164개 Python 문제 · GitHub 코드 **제외** · 평균 **7.7**개 유닛 테스트
-
 </div>
 <div>
 
@@ -344,7 +365,12 @@ def has_close_elements(
 
 $$\text{pass@k} = 1 - \frac{\binom{n-c}{k}}{\binom{n}{k}}$$
 
-n번 시도 중 k개를 뽑았을 때<br>**하나라도 정답일 확률**<br><span class="small">(전부 오답일 확률을 1에서 뺀 불편 추정량)</span>
+- n: 문제당 총 생성 샘플 수 (본 논문에서 n=200)
+- c: 단위 테스트를 통과한 정답 샘플 수
+- k: 평가 시 선택하는 샘플 수 (k ≤ 100)
+
+즉, n번 시도 중 k개를 뽑았을 때 **하나라도 정답일 확률**<br>
+<span class="small">(전부 오답일 확률을 1에서 뺀 불편 추정량)</span>
 
 <hr>
 
@@ -361,6 +387,45 @@ HumanEval의 핵심 설계 원칙:
 3. 평균 7.7개 테스트: 하나의 문제당 다양한 엣지 케이스를 커버해서 우연한 통과를 방지합니다.
 
 Codex 초기 결과: pass@1 28.8%, Codex-S fine-tuned pass@100 70.2% (논문 abstract 기준) → 반복 샘플링 전략의 유효성을 보여줍니다.
+-->
+
+
+---
+
+# HumanEval 평가 데이터 특징
+
+<br>
+
+<div class="highlight-box info">
+
+GitHub 소스코드로 학습하는 과정에서 **Codeforces 등에 출제된 문제의 솔루션을 이미 학습했을 가능성**이 있다.<br>
+→ 평가 데이터는 **수작업으로 작성**될 필요가 있다
+
+</div>
+
+<br>
+
+<div class="grid grid-cols-3 gap-6" style="text-align: center">
+<div class="stat-card">
+  <div class="stat-number">164</div>
+  <div class="stat-label">수작업 프로그래밍 문제</div>
+</div>
+<div class="stat-card">
+  <div class="stat-number" style="font-size: 1.4em">4가지</div>
+  <div class="stat-label">구성 요소<br><span style="font-size: 0.85em">함수 시그니처 · Docstring<br>함수 본문 · 단위 테스트</span></div>
+</div>
+<div class="stat-card">
+  <div class="stat-number">7.7</div>
+  <div class="stat-label">문제당<br>평균 단위 테스트 수</div>
+</div>
+</div>
+
+<!--
+왜 수작업 작성이 중요한가: LLM은 GitHub의 방대한 코드를 학습했기 때문에, 알고리즘 문제 사이트(Codeforces, LeetCode 등)의 풀이 코드도 훈련 데이터에 포함되어 있을 수 있습니다. 기존 문제를 그대로 쓰면 "벤치마크를 푸는 게 아니라 외운 것을 내뱉는" 상황이 됩니다.
+
+4가지 구성 요소: 함수 시그니처(이름, 입출력 타입)가 있어서 모델이 무엇을 만들어야 할지 알 수 있고, docstring으로 문제 설명을 제공하고, 실제 함수 본문을 생성하게 한 뒤, 단위 테스트로 검증합니다.
+
+평균 7.7개 테스트: 엣지 케이스를 다양하게 커버해서 우연한 통과를 방지합니다.
 -->
 
 ---
@@ -399,9 +464,12 @@ Top 모델들이 HumanEval 원본에서는 90%+ 달성하지만,
 
 EvoEval의 **7가지 변형** 예시:
 - 함수 이름 변경 (e.g., `has_close_elements` → `check_proximity`)
-- 입출력 형식 뒤집기 (반환 타입 변경)
-- 함수 합성 (두 함수를 하나로 합침)
-- 맥락·도메인 교체 (숫자 → 문자열 문제로)
+- 입출력 형식 뒤집기 (e.g., bool 반환 → 조건을 만족하는 쌍의 개수 반환)
+- 함수 합성 (e.g., `has_close_elements` + `mean` → "평균과 가장 가까운 원소 쌍 존재 여부")
+- 맥락·도메인 교체 (e.g., 숫자 근접도 → 문자열 편집 거리 근접도)
+- 난이도 상향 (e.g., 엣지 케이스 추가: 빈 리스트, 음수, 중복값 처리 필요)
+- 미묘한 의미 변환 (e.g., `≤ threshold` → `< threshold`, 경계값 조건 변경)
+- 외부 도구 활용 (e.g., `datetime` 라이브러리로 날짜 계산 추가)
 
 → 문제의 본질은 같지만 **표현만 바뀌었을 때 풀지 못한다**<br>
 → 진짜 이해가 아니라 **패턴 암기**에 의존한다는 증거
@@ -420,7 +488,7 @@ EvoEval (COLM 2024): 51개 LLM 평가 결과, 평균 39.4% 하락. 이것은 "�
 
 ---
 
-# HumanEval의 핵심 한계
+# HumanEval의 한계
 
 <div class="highlight-box danger">
 
@@ -431,7 +499,7 @@ EvoEval (COLM 2024): 51개 LLM 평가 결과, 평균 39.4% 하락. 이것은 "�
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### HumanEval이 가정하는 세계
+### HumanEval의 제약조건
 - 독립적인 함수 한 개
 - 명확한 입출력 명세
 - 빈 컨텍스트에서 시작
@@ -442,7 +510,7 @@ EvoEval (COLM 2024): 51개 LLM 평가 결과, 평균 39.4% 하락. 이것은 "�
 ### 현실 세계의 소프트웨어 개발
 - **여러 파일, 모듈, 클래스**가 얽힌 대규모 코드베이스
 - 기존 구현·테스트·문서 등 **프로젝트 전체 맥락** 이해 필요
-- GitHub 이슈를 읽고 버그를 **재현**하고, 기존 **테스트 스위트**를 통과시켜야
+- GitHub 이슈를 읽고 버그를 **재현**하고, 기존 **테스트 스위트**를 통과시켜야 함
 
 </div>
 </div>
@@ -504,7 +572,8 @@ layout: section
 
 <div class="highlight-box danger" style="margin-top: 0.5em; font-size: 0.85em">
 
-BM25 retriever + Claude 2로 단 **1.96%**만 해결!
+BM25 retriever + Claude 2로 단 1.96%만 해결!<br>
+<span class="small">HumanEval 84% 달성 모델이 실전 코드베이스 앞에서 사실상 무력화</span>
 
 </div>
 
@@ -525,17 +594,26 @@ Princeton NLP 그룹이 2023년에 발표했으며 ICLR 2024 Oral 채택됩니�
 
 # SWE-bench 구축: 3단계 파이프라인
 
-<div class="grid grid-cols-2 gap-6">
-<div>
+<div style="display: flex; justify-content: center; margin-bottom: 0.8em">
+<img src="./images/03-jimenez2024-swe-bench/fig2-swe-bench-task-instances.jpg" style="width: 70%; border-radius: 8px" />
+</div>
 
-### ~90,000 → 2,294 생존
+<div class="grid grid-cols-3 gap-4" style="font-size: 0.85em">
+<div class="highlight-box info">
 
 **Stage 1: PR 수집**
-- 12개 인기 레포에서 ~90,000 PR 수집
+- 12개 인기 레포에서
+- ~90,000 PR 수집
+
+</div>
+<div class="highlight-box warning">
 
 **Stage 2: 조건 기반 필터링**
 - GitHub 이슈와 연결된 PR
 - 테스트 파일 수정 포함
+
+</div>
+<div class="highlight-box danger">
 
 **Stage 3: 실행 기반 필터링**
 - 패치 적용 전 테스트 **실패**
@@ -543,12 +621,9 @@ Princeton NLP 그룹이 2023년에 발표했으며 ICLR 2024 Oral 채택됩니�
 - 환경 오류 없음
 
 </div>
-<div>
-
-<img src="./images/03-jimenez2024-swe-bench/fig2-swe-bench-task-instances.jpg" style="width: 100%; border-radius: 8px" />
-
 </div>
-</div>
+
+<p class="emphasis" style="text-align: center; margin-top: 0.6em">~90,000 PR → 최종 <strong>2,294개</strong> 인스턴스 (약 2.5% 생존)</p>
 
 <p class="source">12개 레포: Django(850), sympy(386), scikit-learn(229), sphinx(187), matplotlib(184) 등</p>
 
@@ -579,12 +654,14 @@ Princeton NLP 그룹이 2023년에 발표했으며 ICLR 2024 Oral 채택됩니�
 
 <span class="small">→ fail-to-pass + pass-to-pass 동시 충족</span>
 
-$$\text{resolve rate} = \frac{\text{해결된 인스턴스}}{\text{전체 인스턴스}}$$
-
 </div>
 <div>
 
 <img src="./images/03-jimenez2024-swe-bench/fig8-visualization-of-the-eval-pipeline.jpg" style="width: 100%; border-radius: 8px" />
+
+$$\text{resolve rate} = \frac{\text{해결된 인스턴스}}{\text{전체 인스턴스}}$$
+
+<span class="small">인스턴스당 **1회 시도(pass@1)** — 생성한 패치 하나로 모든 테스트를 통과해야 resolved</span>
 
 </div>
 </div>
@@ -632,35 +709,23 @@ pass-to-pass 테스트 중간값 51개 — 패치 하나로 기존 51개 테스�
 
 # SWE-bench 초기 결과
 
-<div class="grid grid-cols-2 gap-8">
-<div>
+<br>
+<br>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1em; height: 70%">
 
-### 논문 발표 당시 성능
-
-<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5em">
+<div class="stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 1em; width: 60%">
   <div class="stat-card red">
-    <div class="stat-number" style="font-size: 1.4em">1.96%</div>
+    <div class="stat-number" style="font-size: 1.6em">1.96%</div>
     <div class="stat-label">Claude 2<br>BM25 13k</div>
   </div>
   <div class="stat-card yellow">
-    <div class="stat-number" style="font-size: 1.4em">~5%</div>
-    <div class="stat-label">Oracle retrieval<br>(정답 파일 제공 시)</div>
+    <div class="stat-number" style="font-size: 1.6em">~5%</div>
+    <div class="stat-label">Oracle retrieval<br>(실제 PR이 수정한 파일을 컨텍스트로 제공)</div>
   </div>
 </div>
 
-<p class="emphasis" style="margin-top: 0.5em">HumanEval 84% 달성 모델이<br>SWE-bench에서는 2% 미만</p>
+<p class="emphasis">HumanEval 84% 달성 모델이 SWE-bench에서는 2% 미만</p>
 
-</div>
-<div>
-
-### 컨텍스트 길이와 성능
-- 관련 파일 검색 컨텍스트가 길어질수록 성능 **하락**
-- 정답 파일의 수정 줄 ±15줄만 알려줬을 때:<br>
-  Claude 2: 4.8% → 5.9%<br>
-  GPT-4: 1.3% → 3.4%
-- → "어디를 고쳐야 하는지 찾는 능력"이 핵심 병목
-
-</div>
 </div>
 
 <!--
@@ -673,19 +738,70 @@ pass-to-pass 테스트 중간값 51개 — 패치 하나로 기존 51개 테스�
 
 ---
 
-# SWE-bench의 품질 문제
+# 컨텍스트 구성 방식이 성능을 좌우한다
 
-- 2,294개 중 상당수가 **모호**하거나 **불명확**
-- 테스트 사양이 불충분한 경우 존재
-- 올바른 솔루션도 테스트 실패 가능
-- 벤치마크 자체의 신뢰성 의문 제기
+<div class="grid grid-cols-3 gap-4" style="font-size: 0.82em">
+<div>
 
+<img src="./images/03-jimenez2024-swe-bench/table3.jpg" style="width: 100%; border-radius: 6px" />
+<p class="source" style="text-align: center; margin-top: 0.3em">Table 3: BM25 Recall<br>컨텍스트 길이↑ → recall↑</p>
+
+</div>
+<div>
+
+<img src="./images/03-jimenez2024-swe-bench/table5.jpg" style="width: 100%; border-radius: 6px" />
+<p class="source" style="text-align: center; margin-top: 0.3em">Table 5: BM25 검색 시 해결률<br>Claude 2 <strong>1.97%</strong></p>
+
+</div>
+<div>
+
+<img src="./images/03-jimenez2024-swe-bench/table18.jpg" style="width: 100%; border-radius: 6px" />
+<p class="source" style="text-align: center; margin-top: 0.3em">Table 18: Oracle 검색 시 해결률<br>Claude 2 <strong>4.80%</strong></p>
+
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-4" style="margin-top: 0.6em; font-size: 0.85em">
 <div class="highlight-box warning">
 
-실제로 발견된 문제들:
-- 이슈 설명이 불완전해 PR 토론 내용까지 읽어야 이해 가능
-- 테스트가 특정 에러 메시지 문자열을 검사하는 등 과도하게 구체적
-- Deprecated API 사용 방식 등 암묵적 맥락 누락
+recall↑에도 해결률은 오히려 하락 — **파일을 더 많이 넣는다고 해결되지 않는다**<br>
+Oracle로 정확한 파일을 알려줘도 최대 4.8% 수준
+
+</div>
+<div class="highlight-box info">
+
+수정 파일 **외**의 맥락(의존 모듈·테스트·히스토리)도 이슈 해결에 필요<br>
+→ 동적으로 탐색하는 **에이전트 스캐폴딩** 연구로 이어짐 <span class="small">(오늘 발표 범위 밖)</span>
+
+</div>
+</div>
+
+<!--
+이 슬라이드가 중요한 이유: SWE-bench 논문이 단순히 "어렵다"는 것을 보여준 게 아니라, "왜 어려운가"를 분해했습니다.
+
+BM25 13k → Oracle 파일 → Oracle Collapsed 순서로 컨텍스트 품질이 올라갈수록 성능이 올라가지만, Oracle Collapsed에서도 5.9%에 머뭅니다. 이것이 에이전트 스캐폴딩 연구의 출발점이 됩니다 — "어떤 컨텍스트를, 언제, 어떻게 수집할 것인가".
+
+수정 파일 외 맥락의 예: A 파일을 수정하려면 B 파일이 A를 어떻게 사용하는지, C 테스트가 무엇을 기대하는지, PR 히스토리에서 왜 이렇게 설계했는지 등을 알아야 할 수 있습니다.
+-->
+
+---
+
+# SWE-bench의 품질 문제
+
+<p style="margin-bottom: 0.5em">2,294개 중 상당수가 모호하거나 불명확 → <strong>올바른 솔루션도 테스트 실패 가능</strong></p>
+
+<div class="highlight-box warning" style="font-size: 0.88em">
+
+**실제로 발견된 문제들:**
+
+**① 불완전한 이슈 설명** — PR 토론까지 읽어야 이해 가능<br>
+<span class="small">e.g. "Fix the regression from #1234" — #1234를 모르면 무엇을 고쳐야 할지 알 수 없음</span>
+
+**② 과도하게 구체적인 테스트** — 로직은 맞아도 표현이 다르면 실패<br>
+<span class="small">e.g. 에러 메시지가 `"invalid input"` 대신 `"Input is invalid"`이면 테스트 실패</span>
+
+**③ 이슈 본문에 없는 배경 지식 필요**<br>
+<span class="small">e.g. Python 3.9에서 deprecated된 `collections.Callable` → `collections.abc.Callable` 변경이 필요한데, 이슈엔 언급 없음</span>
 
 </div>
 
